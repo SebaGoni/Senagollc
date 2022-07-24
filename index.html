@@ -316,25 +316,21 @@
                     <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
                 </div>
                 <!--El form de prueba empieza aca-->
-                <div class="row">
-                    <div id="templatemo_contact" class="col-md-4 gallery-contact">
-                </div>
-                <div class="col-md-8 templatemo_contactform">
-                    <div class="templatemo_contacttitle">CONTACTO</div>
-                    <div class="templatemo_sub_contacttitle">Si requieres un subtitulo escribelo aquí</div>
-                    <p> Escribe aquí el mensaje que quieres presentar si es necesario.</p>
-            
-                    <form action="https://formspree.io/f/mzbonyrl" method="post">
-                        <input type="text" name="name" id="name" class="name" placeholder="NOMBRE">
-                        <input type="text" name="mail" id="mail" class="email" placeholder="CORREO">
-                        <input type="text" name="phone" id="subject" class="subject" placeholder="TELÉFONO">
-                        <textarea name="message" class="message" placeholder="MENSAJE ... " id="message"></textarea>
-                        <div class="clear"></div>
-                        <div class="col-md-8"> 
-                            <button type="submit" class="btn btn-primary">ENVIAR </button>
-                        </div>
-                    </form>
-                </div>
+                <form
+  action="https://formspree.io/f/mzbonyrl"
+  method="POST"
+>
+  <label>
+    Your email:
+    <input type="email" name="email">
+  </label>
+  <label>
+    Your message:
+    <textarea name="message"></textarea>
+  </label>
+  <!-- your other form fields go here -->
+  <button type="submit">Send</button>
+</form>
             
             </div>
         </section>
