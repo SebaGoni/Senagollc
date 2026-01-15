@@ -1,206 +1,242 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
+    <meta charset="UTF-8">
     <title>MDQ Flooring | Pisos vinílicos, deck WPC y wall panel</title>
 
-    <meta name="description" content="MDQ Flooring. Colocación profesional de pisos vinílicos, deck WPC y wall panel en Mar del Plata y alrededores. Presupuesto sin compromiso." />
-    <meta name="author" content="MDQ Flooring" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MDQ Flooring. Instalación profesional de pisos vinílicos, deck WPC y wall panel en Mar del Plata. Terminaciones premium.">
 
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            color: #1c1c1c;
+        }
 
-    <link href="css/styles.css" rel="stylesheet" />
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.9);
+        }
+
+        .hero {
+            min-height: 100vh;
+            background:
+                linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
+                url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c");
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
+
+        section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .service-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,.05);
+            transition: transform .3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .gallery img {
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.15);
+        }
+
+        .contact-box {
+            background: #111;
+            color: #fff;
+            border-radius: 25px;
+            padding: 60px;
+        }
+
+        footer {
+            padding: 40px 0;
+            background: #0f0f0f;
+            color: #aaa;
+            text-align: center;
+        }
+
+        .whatsapp {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #25d366;
+            color: #fff;
+            padding: 16px 22px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,.3);
+        }
+    </style>
 </head>
 
-<body id="page-top">
+<body>
 
 <!-- NAV -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+<nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#page-top">
-            MDQ Flooring
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
-            Menu <i class="fas fa-bars ms-1"></i>
+        <a class="navbar-brand fw-bold" href="#">MDQ Flooring</a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-                <li class="nav-item"><a class="nav-link" href="#services">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link" href="#portfolio">Trabajos</a></li>
-                <li class="nav-item"><a class="nav-link" href="#about">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contact">Contacto</a></li>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="#trabajos">Trabajos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
 <!-- HERO -->
-<header class="masthead">
+<section class="hero">
     <div class="container">
-        <div class="masthead-subheading">
-            MDQ Flooring
-        </div>
-        <div class="masthead-heading text-uppercase">
-            Pisos y revestimientos premium
-        </div>
-        <a class="btn btn-primary btn-xl text-uppercase" href="#contact">
-            Pedir presupuesto
+        <h1>MDQ Flooring</h1>
+        <p class="mt-4">
+            Instalación profesional de pisos vinílicos, deck WPC y wall panel.
+            Diseño, calidad y terminaciones premium en Mar del Plata.
+        </p>
+        <a href="#contacto" class="btn btn-light btn-lg mt-4">
+            Solicitar presupuesto
         </a>
     </div>
-</header>
+</section>
 
 <!-- SERVICIOS -->
-<section class="page-section" id="services">
+<section id="servicios">
     <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Servicios</h2>
-            <h3 class="section-subheading text-muted">
-                Soluciones modernas y duraderas para hogares y locales comerciales
-            </h3>
+        <div class="section-title">
+            <h2>Servicios</h2>
+            <p>Soluciones modernas para espacios exigentes</p>
         </div>
 
-        <div class="row text-center">
+        <div class="row g-4">
             <div class="col-md-4">
-                <img src="./assets/img/1.png" alt="Pisos vinílicos">
-                <h4 class="my-3">Pisos vinílicos</h4>
-                <p class="text-muted">
-                    Colocación profesional de pisos vinílicos SPC y LVT.
-                    Resistentes, modernos y fáciles de mantener.
-                </p>
-            </div>
-
-            <div class="col-md-4">
-                <img src="./assets/img/2.png" alt="Deck WPC">
-                <h4 class="my-3">Deck WPC</h4>
-                <p class="text-muted">
-                    Instalación de deck WPC para exteriores.
-                    Ideal para patios, balcones y terrazas.
-                </p>
-            </div>
-
-            <div class="col-md-4">
-                <img src="./assets/img/3.png" alt="Wall Panel">
-                <h4 class="my-3">Wall Panel</h4>
-                <p class="text-muted">
-                    Revestimientos decorativos interiores que aportan diseño y calidez.
-                </p>
-            </div>
-
-            <div>
-                <a class="btn btn-primary btn-xl text-uppercase" href="#contact">
-                    Consultar ahora
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- PORTFOLIO -->
-<section class="page-section bg-light" id="portfolio">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Trabajos realizados</h2>
-            <h3 class="section-subheading text-muted">
-                Algunos de nuestros proyectos
-            </h3>
-        </div>
-
-        <!-- IMÁGENES SE MANTIENEN -->
-        <!-- No toqué nada acá -->
-        <!-- Tus fotos reales van perfectas -->
-    </div>
-</section>
-
-<!-- NOSOTROS -->
-<section class="page-section" id="about">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Nosotros</h2>
-            <h3 class="section-subheading text-muted">
-                Experiencia, compromiso y calidad en cada trabajo
-            </h3>
-        </div>
-
-        <ul class="timeline">
-            <li>
-                <div class="timeline-image">
-                    <img class="rounded-circle img-fluid" src="assets/img/about/1.jpg" alt="">
+                <div class="service-card">
+                    <h4>Pisos vinílicos</h4>
+                    <p>
+                        Instalación de pisos SPC y LVT. Resistentes al agua,
+                        fáciles de mantener y con diseño moderno.
+                    </p>
                 </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>MDQ Flooring</h4>
-                        <h4 class="subheading">Especialistas en pisos</h4>
+            </div>
+
+            <div class="col-md-4">
+                <div class="service-card">
+                    <h4>Deck WPC</h4>
+                    <p>
+                        Solución ideal para exteriores.
+                        Alta durabilidad, sin mantenimiento y estética premium.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="service-card">
+                    <h4>Wall Panel</h4>
+                    <p>
+                        Revestimientos decorativos que aportan
+                        calidez, diseño y personalidad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TRABAJOS -->
+<section id="trabajos" class="bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Trabajos realizados</h2>
+        </div>
+
+        <div class="row g-4 gallery">
+            <div class="col-md-4">
+                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid">
+            </div>
+            <div class="col-md-4">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid">
+            </div>
+            <div class="col-md-4">
+                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACTO (FORMULARIO ORIGINAL FUNCIONANDO) -->
+<section id="contacto">
+    <div class="container">
+        <div class="contact-box">
+            <h2 class="mb-4 text-center">Presupuesto sin compromiso</h2>
+
+            <form action="https://formspree.io/f/mzbonyrl" method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="name" class="form-control" placeholder="Nombre" required>
                     </div>
-                    <div class="timeline-body">
-                        <p class="text-muted">
-                            Nos dedicamos a la colocación profesional de pisos y revestimientos,
-                            cuidando cada detalle desde el asesoramiento hasta la instalación final.
-                        </p>
+                    <div class="col-md-6">
+                        <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="tel" name="phone" class="form-control" placeholder="Teléfono" required>
+                    </div>
+                    <div class="col-12">
+                        <textarea name="message" class="form-control" rows="4" placeholder="Mensaje" required></textarea>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button class="btn btn-light btn-lg px-5">
+                            Enviar consulta
+                        </button>
                     </div>
                 </div>
-            </li>
-
-            <li class="timeline-inverted">
-                <div class="timeline-image">
-                    <h4>
-                        Calidad
-                        <br />y
-                        <br />Confianza
-                    </h4>
-                </div>
-            </li>
-        </ul>
-    </div>
-</section>
-
-<!-- CONTACTO -->
-<section class="page-section" id="contact">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Contacto</h2>
-            <h3 class="section-subheading text-muted">
-                Pedí tu presupuesto sin compromiso
-            </h3>
+            </form>
         </div>
-
-        <!-- FORMULARIO ORIGINAL (FUNCIONA IGUAL) -->
-        <form id="contactForm" action="https://formspree.io/f/mzbonyrl" method="POST">
-            <div class="row align-items-stretch mb-5">
-                <div class="col-md-6">
-                    <input class="form-control" name="name" type="text" placeholder="Nombre *" required />
-                    <input class="form-control" name="email" type="email" placeholder="Email *" required />
-                    <input class="form-control" name="phone" type="tel" placeholder="Teléfono *" required />
-                </div>
-                <div class="col-md-6">
-                    <textarea class="form-control" name="message" placeholder="Mensaje *" required></textarea>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <button class="btn btn-primary btn-xl text-uppercase" type="submit">
-                    Enviar mensaje
-                </button>
-            </div>
-        </form>
     </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="footer py-4">
-    <div class="container text-center">
-        <div>© MDQ Flooring — Mar del Plata</div>
-    </div>
+<footer>
+    © MDQ Flooring · Mar del Plata
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/scripts.js"></script>
+<a class="whatsapp" href="https://wa.me/549XXXXXXXXXX" target="_blank">
+    WhatsApp
+</a>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
