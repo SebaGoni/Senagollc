@@ -58,27 +58,51 @@
             color: #f0c14b !important;
         }
 
-        /* HERO - con parallax */
+        /* HERO */
         .hero {
+            position: relative;
             min-height: 100vh;
-            padding-top: 120px;
-            background:
-                linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
-                url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c") no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
             display: flex;
             align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c") no-repeat center center;
+            background-size: cover;
+            z-index: 0;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45));
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 0 20px;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 700;
         }
 
         .hero p {
             font-size: 1.2rem;
             max-width: 600px;
+            margin: 0 auto;
         }
 
         /* SECTIONS */
@@ -179,7 +203,7 @@
 <body>
 
 <!-- NAV -->
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="#">
             <img src="assets/img/logo.png" alt="MDQ Flooring" class="logo">
@@ -202,8 +226,9 @@
 
 <!-- HERO -->
 <section class="hero">
-    <div class="container">
-        <h2>MDQ Flooring</h1>
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+        <h1>MDQ Flooring</h1>
         <p class="mt-4">
             Venta e instalación profesional de pisos vinílicos, deck WPC y wall panel.
             Diseño, calidad y terminaciones premium en Mar del Plata.
@@ -306,7 +331,7 @@
     
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Navbar scroll
+    // Navbar scroll color
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
         navbar.classList.toggle('scrolled', window.scrollY > 80);
@@ -314,7 +339,6 @@
 
     // Tilt 3D para service cards
     const cards = document.querySelectorAll('.service-card');
-
     cards.forEach(card => {
         card.addEventListener('mousemove', e => {
             const rect = card.getBoundingClientRect();
@@ -324,7 +348,6 @@
             const centerY = rect.height / 2;
             const rotateX = ((y - centerY) / centerY) * 8;
             const rotateY = ((x - centerX) / centerX) * 8;
-
             card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
         });
 
@@ -332,6 +355,14 @@
             card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0)';
         });
     });
+
+    // Parallax hero fondo (solo escritorio)
+    if(window.innerWidth >= 768){
+        const heroBg = document.querySelector('.hero-bg');
+        window.addEventListener('scroll', () => {
+            heroBg.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+        });
+    }
 </script>
 </body>
 </html>
