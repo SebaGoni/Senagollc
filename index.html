@@ -7,7 +7,7 @@
     <meta name="description" content="MDQ Flooring. Venta e instalación profesional de pisos flotantes, vinílicos, deck WPC y wall panel en Mar del Plata.">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,9 +20,7 @@
             color: #1c1c1c;
             scroll-behavior: smooth;
         }
-        h1,h2,h3,h4,h5,h6 {
-            font-family: 'Poppins', sans-serif;
-        }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; }
 
         /* NAVBAR */
         .navbar {
@@ -34,16 +32,9 @@
             color: #fff !important;
             font-weight: 500;
         }
-        .nav-link:hover {
-            color: #f0c14b !important;
-        }
-        .navbar-brand .logo {
-            height: 90px;
-            width: auto;
-        }
-        @media(max-width:768px){
-            .navbar-brand .logo{height:60px;}
-        }
+        .nav-link:hover { color: #f0c14b !important; }
+        .navbar-brand .logo { height: 90px; width: auto; }
+        @media(max-width:768px){ .navbar-brand .logo{height:60px;} }
 
         /* HERO */
         .hero {
@@ -62,8 +53,6 @@
             background: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c') no-repeat center center;
             background-size: cover;
             z-index:0;
-            transform: translateZ(0);
-            will-change: transform;
         }
         .hero::before{
             content:"";
@@ -81,21 +70,14 @@
             border-radius: 15px;
             max-width: 800px;
         }
-        .hero h1{
-            font-size: 3rem;
-            font-weight:700;
-        }
-        .hero p{
-            font-size:1.2rem;
-            max-width:600px;
-            margin: 0 auto;
-        }
+        .hero h1{ font-size: 3rem; font-weight:600; margin-bottom: 20px; }
+        .hero p{ font-family: 'Montserrat', sans-serif; font-weight:500; font-size:1.15rem; line-height:1.6; margin:0; }
 
         /* SECTIONS */
         section{padding:100px 0;}
         .section-title{margin-bottom:60px; text-align:center;}
         .section-title h2{font-weight:700;}
-        .section-title p{color:#555; font-size:1rem;}
+        .section-title p{color:#555; font-size:1rem; font-family:'Montserrat', sans-serif; font-weight:500;}
 
         /* SERVICE CARDS */
         .service-card{
@@ -145,6 +127,7 @@
             color:#111;
         }
 
+        /* FOOTER */
         footer{
             padding:40px 0;
             background:#0f0f0f;
@@ -177,6 +160,17 @@
             width: 30px;
             height: 30px;
         }
+
+        /* FADE-IN */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -199,35 +193,35 @@
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero fade-in">
     <div class="hero-bg"></div>
-    <div class="container hero-content">
+    <div class="container hero-content fade-in">
         <h1>MDQ Flooring</h1>
         <p>Venta e instalación profesional de pisos vinílicos, deck WPC y wall panel. Diseño, calidad y terminaciones premium en Mar del Plata.</p>
     </div>
 </section>
 
 <!-- SERVICIOS -->
-<section id="servicios">
+<section id="servicios" class="fade-in">
     <div class="container">
-        <div class="section-title">
+        <div class="section-title fade-in">
             <h2>Servicios</h2>
             <p>Soluciones modernas para espacios exigentes</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-4 fade-in">
                 <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')">
                     <h4>Pisos vinílicos</h4>
                     <p>Pisos flotantes SPC y LVT. Resistentes y modernos.</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 fade-in">
                 <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')">
                     <h4>Deck WPC</h4>
                     <p>Soluciones premium para exteriores, sin mantenimiento.</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 fade-in">
                 <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')">
                     <h4>Wall Panel</h4>
                     <p>Revestimientos decorativos de alto impacto visual.</p>
@@ -238,21 +232,21 @@
 </section>
 
 <!-- TRABAJOS -->
-<section id="trabajos" class="bg-light">
+<section id="trabajos" class="bg-light fade-in">
     <div class="container">
-        <div class="section-title"><h2>Trabajos realizados</h2></div>
+        <div class="section-title fade-in"><h2>Trabajos realizados</h2></div>
         <div class="row g-4 gallery">
-            <div class="col-md-4"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid" alt="Trabajo 1"></div>
-            <div class="col-md-4"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid" alt="Trabajo 2"></div>
-            <div class="col-md-4"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid" alt="Trabajo 3"></div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid" alt="Trabajo 1"></div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid" alt="Trabajo 2"></div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid" alt="Trabajo 3"></div>
         </div>
     </div>
 </section>
 
 <!-- CONTACTO -->
-<section id="contacto">
+<section id="contacto" class="fade-in">
     <div class="container">
-        <div class="contact-box">
+        <div class="contact-box fade-in">
             <h2 class="mb-4 text-center">Presupuesto sin compromiso</h2>
             <form action="https://formspree.io/f/mzbonyrl" method="POST">
                 <div class="row g-3">
@@ -299,6 +293,19 @@
             heroBg.style.transform = `translateY(${window.scrollY*0.3}px)`;
         });
     }
+
+    // Fade-in on scroll
+    const faders = document.querySelectorAll('.fade-in');
+    const appearOptions = { threshold: 0.1 };
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, appearOptions);
+    faders.forEach(fader => appearOnScroll.observe(fader));
 </script>
 </body>
 </html>
