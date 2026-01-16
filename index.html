@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MDQ Flooring | Pisos flotantes melaminicos, spc, pvc, deck WPC y wall panel</title>
-
+    <title>MDQ Flooring | Pisos flotantes melamínicos, SPC, PVC, Deck WPC y Wall Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="MDQ Flooring. Venta e instalación profesional de pisos flotantes, vinílicos, alfombras, deck WPC y wall panel en Mar del Plata y la zona.">
 
@@ -18,12 +17,18 @@
             font-family: 'Inter', sans-serif;
             background: #fafafa;
             color: #1c1c1c;
+            scroll-behavior: smooth;
         }
 
         /* NAVBAR */
         .navbar {
-            background: transparent !important;
-            transition: all .3s ease;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         .navbar .navbar-brand,
@@ -32,25 +37,35 @@
             font-weight: 500;
         }
 
-        .navbar.scrolled {
-            background: rgba(255,255,255,0.95) !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,.08);
-        }
-
         .navbar.scrolled .navbar-brand,
         .navbar.scrolled .nav-link {
             color: #111 !important;
         }
 
-        /* HERO */
+        /* Logo responsive */
+        .navbar-brand .logo {
+            height: 90px;
+            width: auto;
+        }
+        @media (max-width: 768px) {
+            .navbar-brand .logo {
+                height: 60px;
+            }
+        }
+
+        /* Navbar links hover */
+        .nav-link:hover {
+            color: #f0c14b !important;
+        }
+
+        /* HERO - con parallax */
         .hero {
             min-height: 100vh;
             padding-top: 120px;
             background:
                 linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
-                url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c");
+                url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c") no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
             color: #fff;
             display: flex;
             align-items: center;
@@ -66,6 +81,7 @@
             max-width: 600px;
         }
 
+        /* SECTIONS */
         section {
             padding: 100px 0;
         }
@@ -88,19 +104,16 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 25px 50px rgba(0,0,0,.25);
-            transition: transform .4s ease;
             overflow: hidden;
+            perspective: 1000px; /* efecto 3D */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .service-card::before {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(
-                to top,
-                rgba(0,0,0,.75),
-                rgba(0,0,0,.25)
-            );
+            background: linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.25));
             z-index: 0;
         }
 
@@ -110,7 +123,7 @@
         }
 
         .service-card:hover {
-            transform: translateY(-10px);
+            box-shadow: 0 35px 60px rgba(0,0,0,0.3);
         }
 
         /* GALLERY */
@@ -125,6 +138,19 @@
             color: #fff;
             border-radius: 25px;
             padding: 60px;
+        }
+
+        .contact-box .btn {
+            background: #f0c14b;
+            color: #111;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-box .btn:hover {
+            background: #e0b028;
+            color: #111;
         }
 
         footer {
@@ -155,18 +181,15 @@
 <!-- NAV -->
 <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
     <div class="container">
-        <!-- Logo transparente grande -->
         <a class="navbar-brand" href="#">
             <img src="assets/img/logo.png" alt="MDQ Flooring" class="logo">
         </a>
 
-        <!-- Botón hamburguesa -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
                 aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Menú -->
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
@@ -177,41 +200,6 @@
     </div>
 </nav>
 
-<!-- CSS -->
-<style>
-/* Fondo semi-transparente para que se vea el logo */
-.navbar {
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
-    backdrop-filter: blur(5px);           /* Efecto borroso */
-}
-
-/* Logo grande y responsive */
-.navbar-brand .logo {
-    height: 90px;   /* Más grande */
-    width: auto;    /* Mantiene proporción */
-}
-
-/* Ajuste en móviles */
-@media (max-width: 768px) {
-    .navbar-brand .logo {
-        height: 60px; /* Ajuste para pantallas pequeñas */
-    }
-}
-
-/* Estilo menú */
-.nav-link {
-    color: #fff !important;  
-    font-weight: 500;
-    margin-left: 15px;
-    transition: color 0.3s;
-}
-
-.nav-link:hover {
-    color: #f0c14b !important; /* Hover dorado */
-}
-</style>
-
-
 <!-- HERO -->
 <section class="hero">
     <div class="container">
@@ -220,7 +208,7 @@
             Venta e instalación profesional de pisos vinílicos, deck WPC y wall panel.
             Diseño, calidad y terminaciones premium en Mar del Plata.
         </p>
-        <a href="#contacto" class="btn btn-light btn-lg mt-4">
+        <a href="#contacto" class="btn btn-lg mt-4">
             Solicitar presupuesto
         </a>
     </div>
@@ -236,23 +224,21 @@
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="service-card"
-                     style="background-image:url('assets/img/pisos-flotantes.jpg')">
+                <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')">
                     <h4>Pisos vinílicos</h4>
                     <p>Pisos flotantes SPC y LVT. Resistentes y modernos.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="service-card"
-                     style="background-image:url('assets/img/deck-wpc.jpg')">
+                <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')">
                     <h4>Deck WPC</h4>
                     <p>Soluciones premium para exteriores, sin mantenimiento.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg');">
+                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')">
                     <h4>Wall Panel</h4>
                     <p>Revestimientos decorativos de alto impacto visual.</p>
                 </div>
@@ -270,13 +256,13 @@
 
         <div class="row g-4 gallery">
             <div class="col-md-4">
-                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid">
+                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid" alt="Trabajo 1">
             </div>
             <div class="col-md-4">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid" alt="Trabajo 2">
             </div>
             <div class="col-md-4">
-                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid">
+                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid" alt="Trabajo 3">
             </div>
         </div>
     </div>
@@ -303,9 +289,7 @@
                         <textarea name="message" class="form-control" rows="4" placeholder="Mensaje" required></textarea>
                     </div>
                     <div class="col-12 text-center">
-                        <button class="btn btn-light btn-lg px-5">
-                            Enviar consulta
-                        </button>
+                        <button class="btn btn-lg px-5">Enviar consulta</button>
                     </div>
                 </div>
             </form>
@@ -322,13 +306,33 @@
 </a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
+    // Navbar scroll
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
         navbar.classList.toggle('scrolled', window.scrollY > 80);
     });
-</script>
 
+    // Tilt 3D para service cards
+    const cards = document.querySelectorAll('.service-card');
+
+    cards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * 8;
+            const rotateY = ((x - centerX) / centerX) * 8;
+
+            card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0)';
+        });
+    });
+</script>
 </body>
 </html>
