@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MDQ Flooring | Pisos vinílicos, deck WPC y wall panel</title>
+    <title>MDQ Flooring | Pisos flotantes melaminicos, spc, pvc, deck WPC y wall panel</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="MDQ Flooring. Instalación profesional de pisos vinílicos, deck WPC y wall panel en Mar del Plata. Terminaciones premium.">
+    <meta name="description" content="MDQ Flooring. Venta e instalación profesional de pisos flotantes, vinílicos, alfombras, deck WPC y wall panel en Mar del Plata y la zona.">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -75,23 +75,51 @@
             text-align: center;
         }
 
+        /* SERVICE CARDS */
         .service-card {
-            background: #fff;
-            border-radius: 18px;
+            position: relative;
+            height: 320px;
+            border-radius: 22px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,.05);
-            transition: transform .3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: #fff;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,.25);
+            transition: transform .4s ease;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(0,0,0,.75),
+                rgba(0,0,0,.25)
+            );
+            z-index: 0;
+        }
+
+        .service-card * {
+            position: relative;
+            z-index: 1;
         }
 
         .service-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-10px);
         }
 
+        /* GALLERY */
         .gallery img {
             border-radius: 18px;
             box-shadow: 0 10px 30px rgba(0,0,0,.15);
         }
 
+        /* CONTACT */
         .contact-box {
             background: #111;
             color: #fff;
@@ -146,7 +174,7 @@
     <div class="container">
         <h1>MDQ Flooring</h1>
         <p class="mt-4">
-            Instalación profesional de pisos vinílicos, deck WPC y wall panel.
+            Venta e instalación profesional de pisos vinílicos, deck WPC y wall panel.
             Diseño, calidad y terminaciones premium en Mar del Plata.
         </p>
         <a href="#contacto" class="btn btn-light btn-lg mt-4">
@@ -165,14 +193,16 @@
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="service-card">
+                <div class="service-card"
+                     style="background-image:url('https://images.unsplash.com/photo-1600607687920-4e2a09cf159d')">
                     <h4>Pisos vinílicos</h4>
-                    <p>Instalación de pisos SPC y LVT. Resistentes, modernos y durables.</p>
+                    <p>Venta e instalación de pisos SPC y LVT. Resistentes y modernos.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="service-card">
+                <div class="service-card"
+                     style="background-image:url('https://images.unsplash.com/photo-1600585154526-990dced4db0d')">
                     <h4>Deck WPC</h4>
                     <p>Soluciones premium para exteriores, sin mantenimiento.</p>
                 </div>
@@ -180,10 +210,11 @@
 
             <div class="col-md-4">
                 <div class="service-card">
+                    <img src="assets/img/wall-panel.jpg" alt="Wall Panel" class="service-img">
                     <h4>Wall Panel</h4>
                     <p>Revestimientos decorativos de alto impacto visual.</p>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 </section>
@@ -244,7 +275,7 @@
     © MDQ Flooring · Mar del Plata
 </footer>
 
-<a class="whatsapp" href="https://wa.me/549XXXXXXXXXX" target="_blank">
+<a class="whatsapp" href="https://wa.me/5492236823388" target="_blank">
     WhatsApp
 </a>
 
