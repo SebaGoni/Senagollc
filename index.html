@@ -174,6 +174,54 @@
         /* FADE-IN */
         .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* BENEFICIOS – NIVEL MÁXIMO */
+#beneficios{
+    background: linear-gradient(180deg, #0f0f0f, #141414);
+    color: #f5f5f5;
+}
+
+#beneficios .section-title h2{
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+#beneficios .section-title p{
+    color: #cfcfcf;
+}
+
+.benefit-card{
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 45px 35px;
+    height: 100%;
+    box-shadow: 0 30px 70px rgba(0,0,0,.35);
+    transition: all .4s cubic-bezier(.19,1,.22,1);
+}
+
+.benefit-card:hover{
+    transform: translateY(-12px);
+    box-shadow: 0 45px 90px rgba(0,0,0,.45);
+}
+
+.benefit-icon{
+    font-size: 2.8rem;
+    margin-bottom: 25px;
+    color: #c9a24d;
+}
+
+#beneficios h5{
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #1c1c1c;
+}
+
+#beneficios p{
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.65;
+}
+
     </style>
 </head>
 <body>
@@ -188,7 +236,7 @@
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link" href="#trabajos">Trabajos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#beneficios">Por qué elegirnos</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
             </ul>
         </div>
@@ -236,40 +284,50 @@
     </div>
 </section>
 
-<!-- TRABAJOS -->
-<section id="trabajos" class="bg-light fade-in">
-    <div class="container">
-        <div class="section-title fade-in"><h2>Trabajos realizados</h2></div>
-        <div class="row g-4 gallery">
-            <div class="col-md-4 fade-in"><img
-  src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7"
-  class="img-fluid"
-  alt="Trabajo 1"
-  data-bs-toggle="modal"
-  data-bs-target="#modalTrabajo1"
-  style="cursor:pointer"
->
-</div>
-            <div class="col-md-4 fade-in"><img
-  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-  class="img-fluid"
-  alt="Trabajo 2"
-  data-bs-toggle="modal"
-  data-bs-target="#modalTrabajo2"
-  style="cursor:pointer"
->
-</div>
-            <div class="col-md-4 fade-in"><img
-  src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6"
-  class="img-fluid"
-  alt="Trabajo 3"
-  data-bs-toggle="modal"
-  data-bs-target="#modalTrabajo3"
-  style="cursor:pointer"
->
-</div>
-        </div>
+<!-- BENEFICIOS -->
+<section id="beneficios" class="fade-in">
+  <div class="container">
+    <div class="section-title fade-in text-center">
+      <h2>Excelencia en cada detalle</h2>
+      <p>Soluciones premium en pisos y revestimientos</p>
     </div>
+
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-12 col-md-3 fade-in">
+        <div class="benefit-card text-center">
+          <div class="benefit-icon">🛠️</div>
+          <h5>Instalación profesional</h5>
+          <p>Ejecutada con precisión técnica y terminaciones de alto nivel.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3 fade-in">
+        <div class="benefit-card text-center">
+          <div class="benefit-icon">🏆</div>
+          <h5>Materiales seleccionados</h5>
+          <p>Productos premium, durables y estéticamente superiores.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3 fade-in">
+        <div class="benefit-card text-center">
+          <div class="benefit-icon">📐</div>
+          <h5>Asesoramiento experto</h5>
+          <p>Acompañamos cada proyecto con criterio técnico y estético.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3 fade-in">
+        <div class="benefit-card text-center">
+          <div class="benefit-icon">✔️</div>
+          <h5>Compromiso y garantía</h5>
+          <p>Seriedad, cumplimiento y respaldo en cada trabajo.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </section>
 
 <!-- CONTACTO -->
