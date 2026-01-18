@@ -212,19 +212,22 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4 fade-in">
-                <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')">
+                <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')"
+                    data-bs-toggle="modal" data-bs-target="#modalPisos">
                     <h4>Pisos vinílicos</h4>
                     <p>Pisos flotantes SPC y LVT. Resistentes y modernos.</p>
                 </div>
             </div>
             <div class="col-md-4 fade-in">
-                <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')">
+                <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')"
+                    data-bs-toggle="modal" data-bs-target="#modalDeck">
                     <h4>Deck WPC</h4>
                     <p>Soluciones premium para exteriores, sin mantenimiento.</p>
                 </div>
             </div>
             <div class="col-md-4 fade-in">
-                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')">
+                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')"
+                    data-bs-toggle="modal" data-bs-target="#modalWall">
                     <h4>Wall Panel</h4>
                     <p>Revestimientos decorativos de alto impacto visual.</p>
                 </div>
@@ -326,84 +329,56 @@
     }, appearOptions);
     faders.forEach(fader => appearOnScroll.observe(fader));
 </script>
-    <!-- ================= MODALES ================= -->
-
-<!-- Pisos Vinílicos -->
-<div class="modal fade" id="modalVinilicos" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    
+    <!-- MODAL PISOS -->
+<div class="modal fade" id="modalPisos" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Pisos Vinílicos</h5>
+        <h5 class="modal-title">Pisos vinílicos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1615874959474-d609969a20ed"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1588854337221-4cf9fa96059c"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1604709177225-055f99402ea3"></div>
-        </div>
+        <p>Pisos SPC y LVT ideales para interiores modernos.</p>
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid rounded mb-3">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid rounded">
       </div>
     </div>
   </div>
 </div>
 
-<!-- Deck WPC -->
+<!-- MODAL DECK -->
 <div class="modal fade" id="modalDeck" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Deck WPC</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1598300053652-5eab9a9a0bba"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1599423300746-b62533397364"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1601924928376-3ec8a98e1f26"></div>
-        </div>
+        <p>Soluciones premium para exteriores.</p>
+        <img src="https://images.unsplash.com/photo-1598300053654-9ab6b83dd2e5" class="img-fluid rounded mb-3">
+        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" class="img-fluid rounded">
       </div>
     </div>
   </div>
 </div>
 
-<!-- Wall Panel -->
+<!-- MODAL WALL PANEL -->
 <div class="modal fade" id="modalWall" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Wall Panel</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1616046229478-9901c5536a45"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1602526216432-4f2b6b6f21c9"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1600566753151-384129cf4e3e"></div>
-        </div>
+        <p>Revestimientos decorativos de alto impacto.</p>
+        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid rounded mb-3">
+        <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0" class="img-fluid rounded">
       </div>
     </div>
   </div>
 </div>
-
-<!-- Trabajos Realizados -->
-<div class="modal fade" id="modalTrabajos" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Trabajos realizados</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1615529182904-14819c35db37"></div>
-          <div class="col-md-4"><img class="img-fluid rounded" src="https://images.unsplash.com/photo-1592928302636-c83cf1e1c887"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
