@@ -103,7 +103,7 @@
         .service-card:hover{box-shadow:0 35px 60px rgba(0,0,0,0.3);}
 
         /* GALLERY */
-        .gallery img{border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.15); cursor:pointer;}
+        .gallery img{border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.15);}
 
         /* CONTACT */
         .contact-box{
@@ -132,6 +132,22 @@
             text-align:center;
         }
 
+        /* Íconos sociales en footer */
+        .social-icons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .social-icons a img {
+            width: 30px;
+            height: 30px;
+            transition: transform 0.2s ease;
+        }
+        .social-icons a:hover img {
+            transform: scale(1.1);
+        }
+
         /* WhatsApp flotante circular */
         .whatsapp{
             position: fixed;
@@ -147,6 +163,11 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.25);
             z-index: 999;
             text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .whatsapp:hover{
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         .whatsapp img{width: 30px; height: 30px;}
 
@@ -191,23 +212,19 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4 fade-in">
-                <!-- CAMBIO: data-bs -->
-                <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')"
-                     data-bs-toggle="modal" data-bs-target="#modalVinilicos">
+                <div class="service-card" style="background-image:url('assets/img/pisos-flotantes.jpg')">
                     <h4>Pisos vinílicos</h4>
                     <p>Pisos flotantes SPC y LVT. Resistentes y modernos.</p>
                 </div>
             </div>
             <div class="col-md-4 fade-in">
-                <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')"
-                     data-bs-toggle="modal" data-bs-target="#modalDeck">
+                <div class="service-card" style="background-image:url('assets/img/deck-wpc.jpg')">
                     <h4>Deck WPC</h4>
                     <p>Soluciones premium para exteriores, sin mantenimiento.</p>
                 </div>
             </div>
             <div class="col-md-4 fade-in">
-                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')"
-                     data-bs-toggle="modal" data-bs-target="#modalWall">
+                <div class="service-card" style="background-image:url('assets/img/wall-panel.jpg')">
                     <h4>Wall Panel</h4>
                     <p>Revestimientos decorativos de alto impacto visual.</p>
                 </div>
@@ -221,25 +238,9 @@
     <div class="container">
         <div class="section-title fade-in"><h2>Trabajos realizados</h2></div>
         <div class="row g-4 gallery">
-            <!-- CAMBIO: data-bs -->
-            <div class="col-md-4 fade-in">
-                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7"
-                     class="img-fluid"
-                     alt="Trabajo 1"
-                     data-bs-toggle="modal" data-bs-target="#modalTrabajos">
-            </div>
-            <div class="col-md-4 fade-in">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-                     class="img-fluid"
-                     alt="Trabajo 2"
-                     data-bs-toggle="modal" data-bs-target="#modalTrabajos">
-            </div>
-            <div class="col-md-4 fade-in">
-                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6"
-                     class="img-fluid"
-                     alt="Trabajo 3"
-                     data-bs-toggle="modal" data-bs-target="#modalTrabajos">
-            </div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" class="img-fluid" alt="Trabajo 1"></div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="img-fluid" alt="Trabajo 2"></div>
+            <div class="col-md-4 fade-in"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" class="img-fluid" alt="Trabajo 3"></div>
         </div>
     </div>
 </section>
@@ -265,14 +266,67 @@
 <!-- FOOTER -->
 <footer>
     <p>© MDQ Flooring · Mar del Plata · Argentina</p>
+
+    <p>
+        Atención Comercial:
+        <a href="tel:+542236823388">(+54) 223 6823388</a>
+    </p>
+
+    <div class="social-icons mt-3">
+        <a href="https://www.instagram.com/mdqflooring/" target="_blank" aria-label="Instagram">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+        </a>
+        <a href="https://www.facebook.com/sebastian.goni.427893" target="_blank" aria-label="Facebook">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook">
+        </a>
+    </div>
 </footer>
 
-<!-- WhatsApp -->
-<a class="whatsapp" href="https://wa.me/5492236823388" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+<!-- WhatsApp flotante -->
+<a class="whatsapp" href="https://wa.me/5492236823388" target="_blank" aria-label="WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
 </a>
 
-<!-- ================= MODALES (NUEVO) ================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Tilt cards
+    const cards = document.querySelectorAll('.service-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width/2;
+            const centerY = rect.height/2;
+            const rotateX = ((y-centerY)/centerY)*8;
+            const rotateY = ((x-centerX)/centerX)*8;
+            card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+        });
+        card.addEventListener('mouseleave', ()=>{card.style.transform='rotateX(0deg) rotateY(0deg) translateY(0)';});
+    });
+
+    // Hero parallax (solo escritorio)
+    if(window.innerWidth >= 768){
+        const heroBg = document.querySelector('.hero-bg');
+        window.addEventListener('scroll', ()=>{
+            heroBg.style.transform = `translateY(${window.scrollY*0.3}px)`;
+        });
+    }
+
+    // Fade-in on scroll
+    const faders = document.querySelectorAll('.fade-in');
+    const appearOptions = { threshold: 0.1 };
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, appearOptions);
+    faders.forEach(fader => appearOnScroll.observe(fader));
+</script>
+    <!-- ================= MODALES ================= -->
 
 <!-- Pisos Vinílicos -->
 <div class="modal fade" id="modalVinilicos" tabindex="-1">
@@ -280,7 +334,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Pisos Vinílicos</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="row g-3">
@@ -293,13 +347,13 @@
   </div>
 </div>
 
-<!-- Deck -->
+<!-- Deck WPC -->
 <div class="modal fade" id="modalDeck" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Deck WPC</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="row g-3">
@@ -318,7 +372,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Wall Panel</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="row g-3">
@@ -331,13 +385,13 @@
   </div>
 </div>
 
-<!-- Trabajos -->
+<!-- Trabajos Realizados -->
 <div class="modal fade" id="modalTrabajos" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Trabajos realizados</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="row g-3">
@@ -350,12 +404,6 @@
     </div>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // TODO tu JS ORIGINAL (tilt, parallax, fade-in) — NO SE TOCÓ
-</script>
 
 </body>
 </html>
