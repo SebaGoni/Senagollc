@@ -150,21 +150,25 @@
 
         /* WhatsApp flotante circular */
         .whatsapp{
-            position: fixed;
-            right: 25px;
-            bottom: 25px;
-            width: 65px;
-            height: 65px;
-            background: #25d366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .whatsapp:hover{
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    width: 65px;
+    height: 65px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
         .whatsapp img{width: 42px; height: 42px;}
 
         /* FADE-IN */
@@ -365,8 +369,8 @@
 
 <!-- WhatsApp flotante -->
 <a class="whatsapp" href="https://wa.me/5492236823388" target="_blank" aria-label="WhatsApp">
-<svg viewBox="0 0 24 24" width="40" height="40" fill="white">
-<path d="M6.62 10.79a15.466 15.466 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1v3.5a1 1 0 01-1 1C9.39 21.01 2.99 14.61 2.99 6a1 1 0 011-1H7.5a1 1 0 011 1c0 1.24.2 2.45.57 3.57a1 1 0 01-.24 1.02l-2.21 2.2z"/>
+<svg viewBox="0 0 32 32" width="42" height="42">
+  <path fill="white" d="M19.11 17.36c-.29-.14-1.71-.84-1.97-.94-.26-.1-.45-.14-.64.14-.19.29-.74.94-.9 1.13-.17.19-.33.21-.62.07-.29-.14-1.21-.45-2.31-1.43-.86-.76-1.44-1.69-1.61-1.97-.17-.29-.02-.44.12-.58.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.12-.23-.55-.47-.48-.64-.49l-.55-.01c-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43s1.02 2.82 1.16 3.02c.14.19 2.01 3.07 4.88 4.3.68.29 1.21.46 1.62.59.68.21 1.3.18 1.79.11.55-.08 1.71-.7 1.95-1.38.24-.67.24-1.25.17-1.38-.07-.12-.26-.19-.55-.33zM16.01 3C9.38 3 4 8.38 4 15c0 2.12.55 4.11 1.52 5.84L4 29l8.38-1.48A11.94 11.94 0 0016.01 27C22.63 27 28 21.62 28 15S22.63 3 16.01 3z"/>
 </svg>
 </a>
 
