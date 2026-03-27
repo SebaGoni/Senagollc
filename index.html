@@ -493,8 +493,17 @@
     }
 
     async function loadProducts() {
+        const container = document.getElementById("productContainer");
+
+if (!container) {
+  console.error("No existe productContainer");
+  return;
+}
   try {
-    const res = await fetch(SHEET_URL);
+    const res = await fetch(SHEET_URL, {
+  method: "GET",
+  cache: "no-store"
+});
     const text = await res.text();
 
     const rows = text.split("\n");
@@ -565,6 +574,9 @@
     document.getElementById("productContainer").innerHTML = `
       <p class="text-center">Error al cargar productos.</p>
     `;
+      document.getElementById("productContainer").innerHTML = `
+  <p class="text-center">Error al cargar productos (mobile).</p>
+`;
   }
 }
 
@@ -593,7 +605,9 @@
       });
     }
 
-    loadProducts();
+    document.addEventListener("DOMContentLoaded", function() {
+  loadProducts();
+});
 </script>
     
     <!-- MODAL PISOS -->
