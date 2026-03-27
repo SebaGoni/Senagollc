@@ -549,7 +549,9 @@ async function loadProducts(retry = 0) {
 
     productCache = products;
     lastGoodData = products;
-
+      
+console.log("DATA RAW:", data);
+      
     renderProducts(products);
 
   } catch (err) {
