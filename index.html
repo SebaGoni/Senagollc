@@ -496,7 +496,7 @@
       const res = await fetch(SHEET_URL);
       const text = await res.text();
 
-      const rows = text.split("\n");
+     const rows = text.split("\n");
 
 const products = [];
 
@@ -504,7 +504,6 @@ let dataStarted = false;
 
 rows.forEach(row => {
 
-  // Detecta donde empieza la tabla real
   if (row.toLowerCase().includes("descrip")) {
     dataStarted = true;
     return;
@@ -512,7 +511,7 @@ rows.forEach(row => {
 
   if (!dataStarted) return;
 
-  const cols = row.split("\t");
+  const cols = row.split(",");
 
   if (cols.length < 4) return;
 
@@ -524,7 +523,7 @@ rows.forEach(row => {
   const precioUSD = parseFloat(precioRaw.replace(/[^0-9.]/g, ""));
   if (isNaN(precioUSD)) return;
 
-  // FILTRO PRODUCTOS (solo lo que te sirve)
+  // 👇 FILTRO (solo pisos)
   if (!nombre.toLowerCase().includes("piso")) return;
 
   products.push({
@@ -536,7 +535,6 @@ rows.forEach(row => {
 });
 
 console.log("PRODUCTOS:", products);
-console.log(rows[2]);
         
         if (products.length === 0) {
   document.getElementById("productContainer").innerHTML = `
