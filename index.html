@@ -500,19 +500,21 @@
 
 const products = [];
 
-rows.forEach(row => {
-  const cols = row.split(",");
+rows.forEach((row, index) => {
 
-  // Validación fuerte
+  // saltar encabezados
+  if (index < 2) return;
+
+  const cols = row.split("\t");
+
   if (cols.length < 4) return;
-  if (!cols[1] || !cols[3]) return;
 
-  const nombre = cols[1].trim();
-  const precioRaw = cols[3].replace(/[^0-9.]/g, "");
+  const nombre = cols[1]?.trim();
+  const precioRaw = cols[3]?.trim();
 
-  if (!precioRaw) return;
+  if (!nombre || !precioRaw) return;
 
-  const precioUSD = parseFloat(precioRaw);
+  const precioUSD = parseFloat(precioRaw.replace(/[^0-9.]/g, ""));
 
   if (isNaN(precioUSD)) return;
 
@@ -521,8 +523,11 @@ rows.forEach(row => {
     precioUSD: precioUSD,
     image: "https://via.placeholder.com/300x200?text=MDQ+Flooring"
   });
+
 });
-        console.log(products);
+
+console.log(products);
+        
         if (products.length === 0) {
   document.getElementById("productContainer").innerHTML = `
     <p class="text-center">No se pudieron cargar los productos.</p>
