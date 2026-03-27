@@ -509,10 +509,7 @@
       
 const cleanText = text.replace(/\r/g, "");
 const rows = cleanText.split("\n");
-      
-    const rows = text.split(/\r?\n/);
 
-    // 👉 encontrar encabezado
     const startIndex = rows.findIndex(r =>
       r.toLowerCase().includes("descrip")
     );
