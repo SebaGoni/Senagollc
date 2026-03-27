@@ -501,13 +501,15 @@
   }
 
   try {
-    const res = await fetch(SHEET_URL, {
-      method: "GET",
-      cache: "no-store"
-    });
+    const res = await fetch(SHEET_URL + "&t=" + new Date().getTime(), {
+  method: "GET"
+});
 
     const text = await res.text();
-
+      
+const cleanText = text.replace(/\r/g, "");
+const rows = cleanText.split("\n");
+      
     const rows = text.split(/\r?\n/);
 
     // 👉 encontrar encabezado
