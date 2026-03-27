@@ -506,7 +506,20 @@ if (!container) {
 });
     const text = await res.text();
 
-    const rows = text.split("\n");
+    const rows = text.split(/\r?\n/);
+
+let dataStarted = false;
+
+rows.forEach(row => {
+
+  const cleanRow = row.trim().toLowerCase();
+
+  if (cleanRow.includes("descrip") || cleanRow.includes("cód")) {
+    dataStarted = true;
+    return;
+  }
+
+  if (!dataStarted) return;
 
     // encontrar donde empieza la tabla real
     const startIndex = rows.findIndex(r =>
