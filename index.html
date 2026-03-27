@@ -481,8 +481,29 @@
 
     // ===== CATALOGO =====
 
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbxOYiL_10Kqs-LdpHQv9p8qUEkUO-757dMHJGi97DllTyDWQOk7jc0Zuwnqj1N4fRzv/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
 
+    const CACHE_KEY = "products_cache_v1";
+
+function saveCache(data) {
+  localStorage.setItem(CACHE_KEY, JSON.stringify({
+    data,
+    time: Date.now()
+  }));
+}
+
+function getCache() {
+  const cache = localStorage.getItem(CACHE_KEY);
+  if (!cache) return null;
+
+  const parsed = JSON.parse(cache);
+
+  // 10 min cache
+  if (Date.now() - parsed.time > 600000) return null;
+
+  return parsed.data;
+}
+    
 const DOLAR = 1450;
 
 function calcularPrecioARS(precioUSD) {
@@ -496,6 +517,14 @@ let lastGoodData = null;
    LOAD PRODUCTS (FETCH FIX)
 ========================= */
 async function loadProducts(retry = 0) {
+
+  const cached = getCache();
+  if (cached) {
+    console.log("Usando cache");
+    renderProducts(cached);
+    return; // 👈 IMPORTANTE: corta la función
+  }
+    
   const container = document.getElementById("productContainer");
 
   if (!container) {
@@ -568,30 +597,53 @@ async function loadProducts(retry = 0) {
   }
 }
     function renderProducts(products) {
-      const container = document.getElementById("productContainer");
-      container.innerHTML = "";
+  const container = document.getElementById("productContainer");
+  container.innerHTML = "";
 
-      products.forEach(p => {
-        const precioARS = calcularPrecioARS(p.precioUSD);
+  let i = 0;
+  const batchSize = 20; // 👈 podés ajustar 15–30 según performance
 
-        const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-        const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+  function renderBatch() {
+    const fragment = document.createDocumentFragment();
 
-        container.innerHTML += `
-          <div class="col-md-3">
-            <div class="product-card">
-              <img src="${p.image}">
-              <div class="product-title">${p.name}</div>
-              <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-              <a href="${link}" target="_blank">
-                <button class="whatsapp-btn">Consultar</button>
-              </a>
-            </div>
-          </div>
-        `;
-      });
+    const batch = products.slice(i, i + batchSize);
+
+    batch.forEach(p => {
+      const precioARS = calcularPrecioARS(p.precioUSD);
+
+      const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+      const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "col-md-3";
+
+      wrapper.innerHTML = `
+        <div class="product-card">
+          <img src="${p.image}">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+          <a href="${link}" target="_blank">
+            <button class="whatsapp-btn">Consultar</button>
+          </a>
+        </div>
+      `;
+
+      fragment.appendChild(wrapper);
+    });
+
+    setTimeout(() => {
+  container.appendChild(fragment);
+}, 0);
+
+    i += batchSize;
+
+    if (i < products.length) {
+      requestAnimationFrame(renderBatch);
     }
+  }
 
+  renderBatch();
+}
     document.addEventListener("DOMContentLoaded", function() {
   loadProducts();
 });
