@@ -520,8 +520,12 @@ rows.forEach(row => {
 
   if (!nombre || !precioRaw) return;
 
-  const precioUSD = parseFloat(precioRaw.replace(/[^0-9.]/g, ""));
+  const match = precioRaw.match(/\d+(\.\d+)?/);
+if (!match) return;
+
+const precioUSD = parseFloat(match[0]);
   if (isNaN(precioUSD)) return;
+if (precioUSD > 1000) return;
 
   // 👇 FILTRO (solo pisos)
   if (!nombre.toLowerCase().includes("piso")) return;
