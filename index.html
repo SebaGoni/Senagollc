@@ -497,12 +497,21 @@
       const text = await res.text();
 
       const rows = text.split("\n");
-        
-const startIndex = rows.findIndex(row => row.includes("Descripción"));
 
 const products = [];
 
-rows.slice(startIndex + 1).forEach(row => {
+let dataStarted = false;
+
+rows.forEach(row => {
+
+  // Detecta donde empieza la tabla real
+  if (row.toLowerCase().includes("descrip")) {
+    dataStarted = true;
+    return;
+  }
+
+  if (!dataStarted) return;
+
   const cols = row.split("\t");
 
   if (cols.length < 4) return;
@@ -513,18 +522,21 @@ rows.slice(startIndex + 1).forEach(row => {
   if (!nombre || !precioRaw) return;
 
   const precioUSD = parseFloat(precioRaw.replace(/[^0-9.]/g, ""));
-
   if (isNaN(precioUSD)) return;
+
+  // FILTRO PRODUCTOS (solo lo que te sirve)
+  if (!nombre.toLowerCase().includes("piso")) return;
 
   products.push({
     name: nombre,
     precioUSD: precioUSD,
-    image: "https://via.placeholder.com/300x200?text=MDQ+Flooring"
+    image: "assets/img/pisos-flotantes.jpg"
   });
+
 });
 
-console.log(products);
-console.log(rows);
+console.log("PRODUCTOS:", products);
+console.log(rows[2]);
         
         if (products.length === 0) {
   document.getElementById("productContainer").innerHTML = `
