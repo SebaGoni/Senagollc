@@ -519,7 +519,10 @@ async function loadProducts(retry = 0) {
     if (!res.ok) throw new Error("HTTP " + res.status);
 
     const data = await res.json();
-
+      
+    console.log("DATA RAW:", data);
+    console.log("COLUMNAS:", Object.keys(data[0] || {}));
+      
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
     const products = data
@@ -549,8 +552,6 @@ async function loadProducts(retry = 0) {
 
     productCache = products;
     lastGoodData = products;
-      
-console.log("DATA RAW:", data);
       
     renderProducts(products);
 
