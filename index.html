@@ -480,11 +480,26 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
 
     // ===== CATALOGO =====
-
+/* =========================
+   CONFIG
+========================= */
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
 
-    const CACHE_KEY = "products_cache_v1";
+const CACHE_KEY = "products_cache_v2";
+const CACHE_TIME = 1000 * 60 * 15; // 15 min
 
+const DOLAR = 1450;
+
+/* =========================
+   UTIL
+========================= */
+function calcularPrecioARS(precioUSD) {
+  return Math.round(precioUSD * DOLAR * 1.5 + 1000);
+}
+
+/* =========================
+   CACHE
+========================= */
 function saveCache(data) {
   localStorage.setItem(CACHE_KEY, JSON.stringify({
     data,
@@ -493,52 +508,57 @@ function saveCache(data) {
 }
 
 function getCache() {
-  const cache = localStorage.getItem(CACHE_KEY);
-  if (!cache) return null;
+  const raw = localStorage.getItem(CACHE_KEY);
+  if (!raw) return null;
 
-  const parsed = JSON.parse(cache);
+  try {
+    const parsed = JSON.parse(raw);
+    const expired = Date.now() - parsed.time > CACHE_TIME;
 
-  // 10 min cache
-  if (Date.now() - parsed.time > 600000) return null;
-
-  return parsed.data;
+    if (expired) return null;
+    return parsed.data;
+  } catch {
+    return null;
+  }
 }
-    
-const DOLAR = 1450;
-
-function calcularPrecioARS(precioUSD) {
-  return Math.round(precioUSD * DOLAR * 1.5 + 1000);
-}
-
-let productCache = null;
-let lastGoodData = null;
 
 /* =========================
-   LOAD PRODUCTS (FETCH FIX)
+   INIT
 ========================= */
-async function loadProducts(retry = 0) {
+document.addEventListener("DOMContentLoaded", loadProducts);
 
-  const cached = getCache();
-  if (cached) {
-    console.log("Usando cache");
-    renderProducts(cached);
-    return; // 👈 IMPORTANTE: corta la función
-  }
-    
+/* =========================
+   MAIN LOAD
+========================= */
+async function loadProducts() {
   const container = document.getElementById("productContainer");
+  if (!container) return;
 
-  if (!container) {
-    console.error("No existe productContainer");
+  // 🔥 1. CACHE FIRST (instantáneo)
+  const cached = getCache();
+
+  if (cached) {
+    console.log("⚡ Render desde cache");
+    renderProducts(cached);
+
+    // 🔄 refresh silencioso
+    refreshProductsInBackground();
+
     return;
   }
 
-  // cache instantáneo
-  if (productCache && retry === 0) {
-    renderProducts(productCache);
-    return;
-  }
+  // 🧊 loading UI
+  container.innerHTML = `<p style="text-align:center">Cargando productos...</p>`;
 
-  container.innerHTML = "Cargando productos...";
+  // 🌐 fetch principal
+  await fetchAndRender();
+}
+
+/* =========================
+   FETCH PRINCIPAL
+========================= */
+async function fetchAndRender() {
+  const container = document.getElementById("productContainer");
 
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
@@ -548,15 +568,14 @@ async function loadProducts(retry = 0) {
     if (!res.ok) throw new Error("HTTP " + res.status);
 
     const data = await res.json();
-      
+
     console.log("DATA RAW:", data);
-    console.log("COLUMNAS:", Object.keys(data[0] || {}));
-      
+
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
     const products = data
       .map(item => {
-        const nombre = item["Descripción"];
+        const nombre = item["Descripción"]?.toString().trim();
         const precioRaw = item["Precio (*)"];
 
         if (!nombre || !precioRaw) return null;
@@ -565,88 +584,113 @@ async function loadProducts(retry = 0) {
         if (!match) return null;
 
         const precioUSD = parseFloat(match[0]);
-
         if (isNaN(precioUSD) || precioUSD <= 0) return null;
 
         return {
           name: nombre,
           precioUSD,
-          precioARS: calcularPrecioARS(precioUSD),
           image: "assets/img/pisos-flotantes.jpg"
         };
       })
       .filter(Boolean);
 
-    if (products.length === 0) throw new Error("Sin productos válidos");
+    if (!products.length) throw new Error("Sin productos válidos");
 
-    productCache = products;
-    lastGoodData = products;
-      
+    // 💾 cache update
+    saveCache(products);
+
+    console.log("🔥 Render fetch");
     renderProducts(products);
 
   } catch (err) {
-    console.warn("Error loadProducts:", err.message);
+    console.warn("Error fetch:", err.message);
 
-    if (retry < 2) {
-      setTimeout(() => loadProducts(retry + 1), 800);
-    } else if (lastGoodData) {
-      renderProducts(lastGoodData);
+    const cached = getCache();
+
+    if (cached) {
+      console.log("🛟 fallback cache");
+      renderProducts(cached);
     } else {
       container.innerHTML = `<p class="text-center">Error al cargar productos</p>`;
     }
   }
 }
-    function renderProducts(products) {
+
+/* =========================
+   BACKGROUND UPDATE
+========================= */
+async function refreshProductsInBackground() {
+  try {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    const data = await res.json();
+
+    if (!Array.isArray(data)) return;
+
+    const products = data
+      .map(item => {
+        const nombre = item["Descripción"]?.toString().trim();
+        const precioRaw = item["Precio (*)"];
+
+        if (!nombre || !precioRaw) return null;
+
+        const match = String(precioRaw).match(/\d+(\.\d+)?/);
+        if (!match) return null;
+
+        return {
+          name: nombre,
+          precioUSD: parseFloat(match[0]),
+          image: "assets/img/pisos-flotantes.jpg"
+        };
+      })
+      .filter(Boolean);
+
+    if (products.length) {
+      saveCache(products);
+      console.log("🔄 cache actualizado en background");
+    }
+
+  } catch (e) {
+    // silencioso (normal si falla)
+  }
+}
+
+/* =========================
+   RENDER OPTIMIZADO
+========================= */
+function renderProducts(products) {
   const container = document.getElementById("productContainer");
   container.innerHTML = "";
 
-  let i = 0;
-  const batchSize = 20; // 👈 podés ajustar 15–30 según performance
+  const fragment = document.createDocumentFragment();
 
-  function renderBatch() {
-    const fragment = document.createDocumentFragment();
+  products.forEach(p => {
+    const precioARS = calcularPrecioARS(p.precioUSD);
 
-    const batch = products.slice(i, i + batchSize);
+    const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+    const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
 
-    batch.forEach(p => {
-      const precioARS = calcularPrecioARS(p.precioUSD);
+    const div = document.createElement("div");
+    div.className = "col-md-3";
 
-      const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-      const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+    div.innerHTML = `
+      <div class="product-card">
+        <img src="${p.image}">
+        <div class="product-title">${p.name}</div>
+        <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+        <a href="${link}" target="_blank">
+          <button class="whatsapp-btn">Consultar</button>
+        </a>
+      </div>
+    `;
 
-      const wrapper = document.createElement("div");
-      wrapper.className = "col-md-3";
+    fragment.appendChild(div);
+  });
 
-      wrapper.innerHTML = `
-        <div class="product-card">
-          <img src="${p.image}">
-          <div class="product-title">${p.name}</div>
-          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-          <a href="${link}" target="_blank">
-            <button class="whatsapp-btn">Consultar</button>
-          </a>
-        </div>
-      `;
-
-      fragment.appendChild(wrapper);
-    });
-
-    setTimeout(() => {
   container.appendChild(fragment);
-}, 0);
-
-    i += batchSize;
-
-    if (i < products.length) {
-      requestAnimationFrame(renderBatch);
-    }
-  }
-
-  renderBatch();
 }
-    document.addEventListener("DOMContentLoaded", function() {
-  loadProducts();
-});
 </script>
     
     <!-- MODAL PISOS -->
