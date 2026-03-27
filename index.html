@@ -492,7 +492,10 @@
       return Math.round(final);
     }
 
-    async function loadProducts(retry = 0) {
+    let productCache = null;
+let lastGoodData = null;
+
+async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
   if (!container) {
@@ -500,20 +503,39 @@
     return;
   }
 
+  // 🧠 si ya tenés cache válida, la usás primero
+  if (productCache && retry === 0) {
+    renderProducts(productCache);
+    refreshInBackground(); // revalida sin bloquear UI
+    return;
+  }
+
+  const controller = new AbortController();
+
+  // ⏱ timeout Safari-safe
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
-    const url = SHEET_URL + "&t=" + new Date().getTime();
+    const url = SHEET_URL + "&t=" + Date.now() + "&nocache=" + Math.random();
 
     const res = await fetch(url, {
       method: "GET",
-      headers: { "Cache-Control": "no-cache" }
+      cache: "no-store",
+      signal: controller.signal,
+      headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      }
     });
+
+    clearTimeout(timeout);
 
     if (!res.ok) throw new Error("Fetch error");
 
     const text = await res.text();
 
-    if (!text || text.length < 50) {
-      throw new Error("Respuesta vacía");
+    if (!text || text.length < 100) {
+      throw new Error("Respuesta vacía o incompleta");
     }
 
     const rows = text.replace(/\r/g, "").split("\n");
@@ -549,26 +571,87 @@
 
       return {
         name: nombre,
-        precioUSD: precioUSD,
+        precioUSD,
         image: "assets/img/pisos-flotantes.jpg"
       };
-    }).filter(p => p !== null);
+    }).filter(Boolean);
 
-    if (products.length === 0) throw new Error("Sin productos");
+    if (products.length === 0) throw new Error("Sin productos válidos");
+
+    // 💾 guardás cache buena
+    productCache = products;
+    lastGoodData = products;
 
     renderProducts(products);
 
   } catch (error) {
-    console.warn("Error, intento:", retry);
+    console.warn("Error intento:", retry, error);
 
-    // 🔁 REINTENTO AUTOMÁTICO
+    clearTimeout(timeout);
+
+    // 🔁 retry con backoff real
     if (retry < 2) {
-      setTimeout(() => loadProducts(retry + 1), 1000);
+      const delay = 800 * (retry + 1);
+
+      setTimeout(() => {
+        loadProducts(retry + 1);
+      }, delay);
+
+      return;
+    }
+
+    // 🧠 fallback inteligente (CLAVE)
+    if (lastGoodData) {
+      console.warn("Usando cache anterior");
+      renderProducts(lastGoodData);
       return;
     }
 
     container.innerHTML =
       `<p class="text-center">Error al cargar productos.</p>`;
+  }
+}
+
+/* 🔄 revalidación en background (no rompe UX) */
+async function refreshInBackground() {
+  try {
+    const url = SHEET_URL + "&t=" + Date.now() + "&nocache=" + Math.random();
+
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
+
+    const rows = text.replace(/\r/g, "").split("\n");
+    const startIndex = rows.findIndex(r => r.toLowerCase().includes("descrip"));
+
+    if (startIndex === -1) return;
+
+    const dataRows = rows.slice(startIndex + 1);
+
+    const products = dataRows.map(row => {
+      const cols = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+      if (cols.length < 4) return null;
+
+      const nombre = cols[1]?.trim();
+      const precioRaw = cols[3]?.trim();
+      const match = precioRaw?.match(/\d+(\.\d+)?/);
+
+      if (!nombre || !match) return null;
+
+      const precioUSD = parseFloat(match[0]);
+
+      return {
+        name: nombre,
+        precioUSD,
+        image: "assets/img/pisos-flotantes.jpg"
+      };
+    }).filter(Boolean);
+
+    if (products.length > 0) {
+      productCache = products;
+    }
+
+  } catch (e) {
+    // silencioso
   }
 }
     function renderProducts(products) {
