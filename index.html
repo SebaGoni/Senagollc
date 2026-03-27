@@ -222,6 +222,47 @@
     line-height: 1.65;
 }
 
+.product-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+
+.product-card img {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.product-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.product-price {
+    font-weight: 700;
+    color: #c9a24d;
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50px;
+    width: 100%;
+    font-weight: 500;
+}
     </style>
 </head>
 <body>
@@ -337,6 +378,24 @@
   </div>
 </section>
 
+<!-- CATALOGO -->
+<section id="catalogo" class="fade-in">
+  <div class="container">
+    <div class="section-title text-center">
+      <h2>Catálogo de productos</h2>
+      <p>Precios actualizados</p>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-4 mx-auto">
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto...">
+      </div>
+    </div>
+
+    <div class="row g-4" id="productContainer"></div>
+  </div>
+</section>
+    
 <!-- CONTACTO -->
 <section id="contacto" class="fade-in">
     <div class="container">
@@ -419,6 +478,76 @@
         });
     }, appearOptions);
     faders.forEach(fader => appearOnScroll.observe(fader));
+
+    // ===== CATALOGO =====
+
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHpSKh2QdsHNsI4IGuzxHOgomDpzZQOkZ5C77Pu8yzfWdNEBN7zrHES_1PHKDcRg/pub?output=csv";
+
+    const DOLAR = 1450;
+
+    function calcularPrecioARS(precioUSD) {
+      const costoPesos = precioUSD * DOLAR;
+      const conMargen = costoPesos * 1.5;
+      const final = conMargen + 1000;
+      return Math.round(final);
+    }
+
+    async function loadProducts() {
+      const res = await fetch(SHEET_URL);
+      const text = await res.text();
+
+      const rows = text.split("\n").slice(2);
+
+      const products = rows.map(row => {
+        const cols = row.split(",");
+
+        if (!cols[1] || !cols[3]) return null;
+
+        const precioUSD = parseFloat(cols[3].replace(/[^0-9.]/g, ""));
+
+        return {
+          name: cols[1].trim(),
+          precioUSD: precioUSD,
+          image: "https://via.placeholder.com/300x200?text=MDQ+Flooring"
+        };
+      }).filter(p => p !== null);
+
+      renderProducts(products);
+
+      document.getElementById("searchInput").addEventListener("input", e => {
+        const filtered = products.filter(p =>
+          p.name.toLowerCase().includes(e.target.value.toLowerCase())
+        );
+        renderProducts(filtered);
+      });
+    }
+
+    function renderProducts(products) {
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
+
+      products.forEach(p => {
+        const precioARS = calcularPrecioARS(p.precioUSD);
+
+        const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+        const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+
+        container.innerHTML += `
+          <div class="col-md-3">
+            <div class="product-card">
+              <img src="${p.image}">
+              <div class="product-title">${p.name}</div>
+              <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+              <a href="${link}" target="_blank">
+                <button class="whatsapp-btn">Consultar</button>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    loadProducts();
 </script>
     
     <!-- MODAL PISOS -->
