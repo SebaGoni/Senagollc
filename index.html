@@ -493,35 +493,24 @@
     }
 
     async function loadProducts() {
-        const container = document.getElementById("productContainer");
+  const container = document.getElementById("productContainer");
 
-if (!container) {
-  console.error("No existe productContainer");
-  return;
-}
+  if (!container) {
+    console.error("No existe productContainer");
+    return;
+  }
+
   try {
     const res = await fetch(SHEET_URL, {
-  method: "GET",
-  cache: "no-store"
-});
+      method: "GET",
+      cache: "no-store"
+    });
+
     const text = await res.text();
 
     const rows = text.split(/\r?\n/);
 
-let dataStarted = false;
-
-rows.forEach(row => {
-
-  const cleanRow = row.trim().toLowerCase();
-
-  if (cleanRow.includes("descrip") || cleanRow.includes("cód")) {
-    dataStarted = true;
-    return;
-  }
-
-  if (!dataStarted) return;
-
-    // encontrar donde empieza la tabla real
+    // 👉 encontrar encabezado
     const startIndex = rows.findIndex(r =>
       r.toLowerCase().includes("descrip")
     );
@@ -530,6 +519,7 @@ rows.forEach(row => {
       throw new Error("No se encontró encabezado");
     }
 
+    // 👉 tomar solo datos reales
     const dataRows = rows.slice(startIndex + 1);
 
     const products = dataRows.map(row => {
@@ -566,9 +556,7 @@ rows.forEach(row => {
     console.log("PRODUCTOS OK:", products);
 
     if (products.length === 0) {
-      document.getElementById("productContainer").innerHTML = `
-        <p class="text-center">No se pudieron cargar los productos.</p>
-      `;
+      container.innerHTML = `<p class="text-center">No se encontraron productos.</p>`;
       return;
     }
 
@@ -582,14 +570,11 @@ rows.forEach(row => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("ERROR:", error);
 
-    document.getElementById("productContainer").innerHTML = `
+    container.innerHTML = `
       <p class="text-center">Error al cargar productos.</p>
     `;
-      document.getElementById("productContainer").innerHTML = `
-  <p class="text-center">Error al cargar productos (mobile).</p>
-`;
   }
 }
 
