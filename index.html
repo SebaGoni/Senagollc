@@ -497,14 +497,12 @@
       const text = await res.text();
 
       const rows = text.split("\n");
+        
+const startIndex = rows.findIndex(row => row.includes("Descripción"));
 
 const products = [];
 
-rows.forEach((row, index) => {
-
-  // saltar encabezados
-  if (index < 2) return;
-
+rows.slice(startIndex + 1).forEach(row => {
   const cols = row.split("\t");
 
   if (cols.length < 4) return;
@@ -523,7 +521,6 @@ rows.forEach((row, index) => {
     precioUSD: precioUSD,
     image: "https://via.placeholder.com/300x200?text=MDQ+Flooring"
   });
-
 });
 
 console.log(products);
