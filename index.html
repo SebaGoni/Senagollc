@@ -480,85 +480,27 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
 
     // ===== CATALOGO =====
-/* =========================
-   CONFIG
-========================= */
+    
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
-
-const CACHE_KEY = "products_cache_v2";
-const CACHE_TIME = 1000 * 60 * 15; // 15 min
 
 const DOLAR = 1450;
 
-/* =========================
-   UTIL
-========================= */
 function calcularPrecioARS(precioUSD) {
   return Math.round(precioUSD * DOLAR * 1.5 + 1000);
 }
 
 /* =========================
-   CACHE
+   LOAD PRODUCTS
 ========================= */
-function saveCache(data) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify({
-    data,
-    time: Date.now()
-  }));
-}
-
-function getCache() {
-  const raw = localStorage.getItem(CACHE_KEY);
-  if (!raw) return null;
-
-  try {
-    const parsed = JSON.parse(raw);
-    const expired = Date.now() - parsed.time > CACHE_TIME;
-
-    if (expired) return null;
-    return parsed.data;
-  } catch {
-    return null;
-  }
-}
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", loadProducts);
-
-/* =========================
-   MAIN LOAD
-========================= */
-async function loadProducts() {
+async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
-  if (!container) return;
 
-  // 🔥 1. CACHE FIRST (instantáneo)
-  const cached = getCache();
-
-  if (cached) {
-    console.log("⚡ Render desde cache");
-    renderProducts(cached);
-
-    // 🔄 refresh silencioso
-    refreshProductsInBackground();
-
+  if (!container) {
+    console.error("No existe productContainer");
     return;
   }
 
-  // 🧊 loading UI
-  container.innerHTML = `<p style="text-align:center">Cargando productos...</p>`;
-
-  // 🌐 fetch principal
-  await fetchAndRender();
-}
-
-/* =========================
-   FETCH PRINCIPAL
-========================= */
-async function fetchAndRender() {
-  const container = document.getElementById("productContainer");
+  container.innerHTML = "Cargando productos...";
 
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
@@ -596,20 +538,13 @@ async function fetchAndRender() {
 
     if (!products.length) throw new Error("Sin productos válidos");
 
-    // 💾 cache update
-    saveCache(products);
-
-    console.log("🔥 Render fetch");
     renderProducts(products);
 
   } catch (err) {
-    console.warn("Error fetch:", err.message);
+    console.warn("Error loadProducts:", err.message);
 
-    const cached = getCache();
-
-    if (cached) {
-      console.log("🛟 fallback cache");
-      renderProducts(cached);
+    if (retry < 2) {
+      setTimeout(() => loadProducts(retry + 1), 800);
     } else {
       container.innerHTML = `<p class="text-center">Error al cargar productos</p>`;
     }
@@ -617,80 +552,59 @@ async function fetchAndRender() {
 }
 
 /* =========================
-   BACKGROUND UPDATE
-========================= */
-async function refreshProductsInBackground() {
-  try {
-    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
-      cache: "no-store"
-    });
-
-    const data = await res.json();
-
-    if (!Array.isArray(data)) return;
-
-    const products = data
-      .map(item => {
-        const nombre = item["Descripción"]?.toString().trim();
-        const precioRaw = item["Precio (*)"];
-
-        if (!nombre || !precioRaw) return null;
-
-        const match = String(precioRaw).match(/\d+(\.\d+)?/);
-        if (!match) return null;
-
-        return {
-          name: nombre,
-          precioUSD: parseFloat(match[0]),
-          image: "assets/img/pisos-flotantes.jpg"
-        };
-      })
-      .filter(Boolean);
-
-    if (products.length) {
-      saveCache(products);
-      console.log("🔄 cache actualizado en background");
-    }
-
-  } catch (e) {
-    // silencioso (normal si falla)
-  }
-}
-
-/* =========================
-   RENDER OPTIMIZADO
+   RENDER (PROGRESIVO SIMPLE)
 ========================= */
 function renderProducts(products) {
   const container = document.getElementById("productContainer");
   container.innerHTML = "";
 
-  const fragment = document.createDocumentFragment();
+  let i = 0;
+  const batchSize = 20;
 
-  products.forEach(p => {
-    const precioARS = calcularPrecioARS(p.precioUSD);
+  function renderBatch() {
+    const fragment = document.createDocumentFragment();
 
-    const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-    const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+    const batch = products.slice(i, i + batchSize);
 
-    const div = document.createElement("div");
-    div.className = "col-md-3";
+    batch.forEach(p => {
+      const precioARS = calcularPrecioARS(p.precioUSD);
 
-    div.innerHTML = `
-      <div class="product-card">
-        <img src="${p.image}">
-        <div class="product-title">${p.name}</div>
-        <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-        <a href="${link}" target="_blank">
-          <button class="whatsapp-btn">Consultar</button>
-        </a>
-      </div>
-    `;
+      const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+      const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
 
-    fragment.appendChild(div);
-  });
+      const div = document.createElement("div");
+      div.className = "col-md-3";
 
-  container.appendChild(fragment);
+      div.innerHTML = `
+        <div class="product-card">
+          <img src="${p.image}">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+          <a href="${link}" target="_blank">
+            <button class="whatsapp-btn">Consultar</button>
+          </a>
+        </div>
+      `;
+
+      fragment.appendChild(div);
+    });
+
+    container.appendChild(fragment);
+
+    i += batchSize;
+
+    if (i < products.length) {
+      requestAnimationFrame(renderBatch);
+    }
+  }
+
+  renderBatch();
 }
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", loadProducts);
 </script>
     
     <!-- MODAL PISOS -->
