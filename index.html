@@ -481,25 +481,28 @@
 
     // ===== CATALOGO =====
 
-  const SHEET_URL = "https://script.google.com/macros/s/AKfycbx6nDIetjUjKwaaOvUws4f_ths8Zt7UvfFWUigRR8Rfbq_0FHE_FfrVJTAdi9xrbH2w/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxx3nPrIQ3VawHw90DUCT0kc1srhp9h2HX6b8UPibM7YfVjlHc_cj8jOYwsw2AqBZQv/exec";
 
 const DOLAR = 1450;
 
 function calcularPrecioARS(precioUSD) {
   const costoPesos = precioUSD * DOLAR;
   const conMargen = costoPesos * 1.5;
-  const final = conMargen + 1000;
-  return Math.round(final);
+  return Math.round(conCosto = costoPesos * 1.5 + 1000);
 }
 
 let productCache = null;
 let lastGoodData = null;
 
+/* =========================
+   LOAD PRODUCTS
+========================= */
 async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
   if (!container) return;
 
+  // cache instantáneo
   if (productCache && retry === 0) {
     renderProducts(productCache);
     refreshInBackground();
@@ -521,23 +524,23 @@ async function loadProducts(retry = 0) {
 
     const data = await res.json();
 
-    if (!Array.isArray(data)) throw new Error("Data inválida");
+    if (!Array.isArray(data)) throw new Error("Invalid data");
 
     const products = data
       .map(item => {
-        const nombre = item.Descripcion || item.descripcion || item.Nombre;
-        const precioRaw = item.Precio || item.precio;
+        // 🔥 TU SHEET REAL
+        const nombre = item["Descripción"];
+        const precioRaw = item["Precio (*)"];
 
         if (!nombre || !precioRaw) return null;
 
+        // limpia "u$s 16.95"
         const match = String(precioRaw).match(/\d+(\.\d+)?/);
         if (!match) return null;
 
         const precioUSD = parseFloat(match[0]);
 
-        if (isNaN(precioUSD) || precioUSD <= 0 || precioUSD > 1000) return null;
-
-        if (!nombre.toLowerCase().includes("piso")) return null;
+        if (isNaN(precioUSD) || precioUSD <= 0) return null;
 
         return {
           name: nombre,
@@ -548,7 +551,7 @@ async function loadProducts(retry = 0) {
       })
       .filter(Boolean);
 
-    if (products.length === 0) throw new Error("Sin productos");
+    if (products.length === 0) throw new Error("No products");
 
     productCache = products;
     lastGoodData = products;
@@ -556,7 +559,7 @@ async function loadProducts(retry = 0) {
     renderProducts(products);
 
   } catch (err) {
-    console.warn("Error:", err);
+    console.warn("Error load:", err);
 
     if (retry < 2) {
       setTimeout(() => loadProducts(retry + 1), 800);
@@ -572,6 +575,9 @@ async function loadProducts(retry = 0) {
   }
 }
 
+/* =========================
+   BACKGROUND REFRESH
+========================= */
 async function refreshInBackground() {
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
@@ -584,20 +590,18 @@ async function refreshInBackground() {
 
     const products = data
       .map(item => {
-        const nombre = item.Descripcion || item.descripcion || item.Nombre;
-        const precioRaw = item.Precio || item.precio;
+        const nombre = item["Descripción"];
+        const precioRaw = item["Precio (*)"];
 
         if (!nombre || !precioRaw) return null;
 
         const match = String(precioRaw).match(/\d+(\.\d+)?/);
         if (!match) return null;
 
-        const precioUSD = parseFloat(match[0]);
-
         return {
           name: nombre,
-          precioUSD,
-          precioARS: calcularPrecioARS(precioUSD),
+          precioUSD: parseFloat(match[0]),
+          precioARS: calcularPrecioARS(parseFloat(match[0])),
           image: "assets/img/pisos-flotantes.jpg"
         };
       })
