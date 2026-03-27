@@ -395,7 +395,7 @@
     <div class="row g-4" id="productContainer"></div>
   </div>
 </section>
-    
+
 <!-- CONTACTO -->
 <section id="contacto" class="fade-in">
     <div class="container">
@@ -480,7 +480,7 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
 
     // ===== CATALOGO =====
-    
+
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
 
 const DOLAR = 1450;
@@ -489,14 +489,23 @@ function calcularPrecioARS(precioUSD) {
   return Math.round(precioUSD * DOLAR * 1.5 + 1000);
 }
 
+let productCache = null;
+let lastGoodData = null;
+
 /* =========================
-   LOAD PRODUCTS
+   LOAD PRODUCTS (FETCH FIX)
 ========================= */
 async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
   if (!container) {
     console.error("No existe productContainer");
+    return;
+  }
+
+  // cache instantáneo
+  if (productCache && retry === 0) {
+    renderProducts(productCache);
     return;
   }
 
@@ -512,12 +521,13 @@ async function loadProducts(retry = 0) {
     const data = await res.json();
 
     console.log("DATA RAW:", data);
+    console.log("COLUMNAS:", Object.keys(data[0] || {}));
 
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
     const products = data
       .map(item => {
-        const nombre = item["Descripción"]?.toString().trim();
+        const nombre = item["Descripción"];
         const precioRaw = item["Precio (*)"];
 
         if (!nombre || !precioRaw) return null;
@@ -526,17 +536,22 @@ async function loadProducts(retry = 0) {
         if (!match) return null;
 
         const precioUSD = parseFloat(match[0]);
+
         if (isNaN(precioUSD) || precioUSD <= 0) return null;
 
         return {
           name: nombre,
           precioUSD,
+          precioARS: calcularPrecioARS(precioUSD),
           image: "assets/img/pisos-flotantes.jpg"
         };
       })
       .filter(Boolean);
 
-    if (!products.length) throw new Error("Sin productos válidos");
+    if (products.length === 0) throw new Error("Sin productos válidos");
+
+    productCache = products;
+    lastGoodData = products;
 
     renderProducts(products);
 
@@ -545,68 +560,43 @@ async function loadProducts(retry = 0) {
 
     if (retry < 2) {
       setTimeout(() => loadProducts(retry + 1), 800);
+    } else if (lastGoodData) {
+      renderProducts(lastGoodData);
     } else {
       container.innerHTML = `<p class="text-center">Error al cargar productos</p>`;
     }
   }
 }
+    function renderProducts(products) {
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
 
-/* =========================
-   RENDER (PROGRESIVO SIMPLE)
-========================= */
-function renderProducts(products) {
-  const container = document.getElementById("productContainer");
-  container.innerHTML = "";
+      products.forEach(p => {
+        const precioARS = calcularPrecioARS(p.precioUSD);
 
-  let i = 0;
-  const batchSize = 20;
+        const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+        const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
 
-  function renderBatch() {
-    const fragment = document.createDocumentFragment();
-
-    const batch = products.slice(i, i + batchSize);
-
-    batch.forEach(p => {
-      const precioARS = calcularPrecioARS(p.precioUSD);
-
-      const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-      const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
-
-      const div = document.createElement("div");
-      div.className = "col-md-3";
-
-      div.innerHTML = `
-        <div class="product-card">
-          <img src="${p.image}">
-          <div class="product-title">${p.name}</div>
-          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-          <a href="${link}" target="_blank">
-            <button class="whatsapp-btn">Consultar</button>
-          </a>
-        </div>
-      `;
-
-      fragment.appendChild(div);
-    });
-
-    container.appendChild(fragment);
-
-    i += batchSize;
-
-    if (i < products.length) {
-      requestAnimationFrame(renderBatch);
+        container.innerHTML += `
+          <div class="col-md-3">
+            <div class="product-card">
+              <img src="${p.image}">
+              <div class="product-title">${p.name}</div>
+              <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+              <a href="${link}" target="_blank">
+                <button class="whatsapp-btn">Consultar</button>
+              </a>
+            </div>
+          </div>
+        `;
+      });
     }
-  }
 
-  renderBatch();
-}
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", loadProducts);
+    document.addEventListener("DOMContentLoaded", function() {
+  loadProducts();
+});
 </script>
-    
+
     <!-- MODAL PISOS -->
 <div class="modal fade" id="modalPisos" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -714,7 +704,7 @@ document.addEventListener("DOMContentLoaded", loadProducts);
     </div>
   </div>
 </div>
-    
+
     <!-- MODAL TRABAJO 1 -->
 <div class="modal fade" id="modalTrabajo1" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered">
