@@ -481,7 +481,7 @@
 
     // ===== CATALOGO =====
 
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbweVyk-9jmlsQN43MgldTp2aWaJ5siY0vd-IVtioeDBEiumGCs1_15WVlusmjtKxV3y/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw2kH6Dj10exrelyhSeXW_0kKi3XCBHGcxXWYPbMKJH1BO_r8QYUnhG09zQ6__NdD_I/exec";
 
 const DOLAR = 1450;
 
@@ -493,45 +493,9 @@ let productCache = null;
 let lastGoodData = null;
 
 /* =========================
-   JSONP CALLBACK
+   LOAD PRODUCTS (FETCH FIX)
 ========================= */
-window.loadProductsCallback = function (data) {
-  if (!Array.isArray(data)) return;
-
-  const products = data
-    .map(item => {
-      const nombre = item["Descripción"];
-      const precioRaw = item["Precio (*)"];
-
-      if (!nombre || !precioRaw) return null;
-
-      const match = String(precioRaw).match(/\d+(\.\d+)?/);
-      if (!match) return null;
-
-      const precioUSD = parseFloat(match[0]);
-
-      if (isNaN(precioUSD) || precioUSD <= 0) return null;
-
-      return {
-        name: nombre,
-        precioUSD,
-        precioARS: calcularPrecioARS(precioUSD),
-        image: "assets/img/pisos-flotantes.jpg"
-      };
-    })
-    .filter(Boolean);
-
-  if (products.length > 0) {
-    productCache = products;
-    lastGoodData = products;
-    renderProducts(products);
-  }
-};
-
-/* =========================
-   LOAD PRODUCTS
-========================= */
-function loadProducts(retry = 0) {
+async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
   if (!container) {
@@ -539,16 +503,57 @@ function loadProducts(retry = 0) {
     return;
   }
 
-  // 🧠 cache instantánea
+  // cache instantáneo
   if (productCache && retry === 0) {
     renderProducts(productCache);
     return;
   }
 
-  const script = document.createElement("script");
+  container.innerHTML = "Cargando productos...";
 
-  const timeout = setTimeout(() => {
-    script.remove();
+  try {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const data = await res.json();
+
+    if (!Array.isArray(data)) throw new Error("Formato inválido");
+
+    const products = data
+      .map(item => {
+        const nombre = item["Descripción"];
+        const precioRaw = item["Precio (*)"];
+
+        if (!nombre || !precioRaw) return null;
+
+        const match = String(precioRaw).match(/\d+(\.\d+)?/);
+        if (!match) return null;
+
+        const precioUSD = parseFloat(match[0]);
+
+        if (isNaN(precioUSD) || precioUSD <= 0) return null;
+
+        return {
+          name: nombre,
+          precioUSD,
+          precioARS: calcularPrecioARS(precioUSD),
+          image: "assets/img/pisos-flotantes.jpg"
+        };
+      })
+      .filter(Boolean);
+
+    if (products.length === 0) throw new Error("Sin productos válidos");
+
+    productCache = products;
+    lastGoodData = products;
+
+    renderProducts(products);
+
+  } catch (err) {
+    console.warn("Error loadProducts:", err.message);
 
     if (retry < 2) {
       setTimeout(() => loadProducts(retry + 1), 800);
@@ -557,14 +562,7 @@ function loadProducts(retry = 0) {
     } else {
       container.innerHTML = `<p class="text-center">Error al cargar productos</p>`;
     }
-  }, 8000);
-
-  script.src = SHEET_URL + "?t=" + Date.now();
-
-  script.onload = () => clearTimeout(timeout);
-  script.onerror = () => clearTimeout(timeout);
-
-  document.body.appendChild(script);
+  }
 }
     function renderProducts(products) {
       const container = document.getElementById("productContainer");
