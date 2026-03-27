@@ -492,7 +492,7 @@
       return Math.round(final);
     }
 
-    async function loadProducts() {
+    async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
   if (!container) {
@@ -501,28 +501,32 @@
   }
 
   try {
-    const res = await fetch(SHEET_URL + "&t=" + new Date().getTime(), {
-  method: "GET"
-});
+    const url = SHEET_URL + "&t=" + new Date().getTime();
+
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "Cache-Control": "no-cache" }
+    });
+
+    if (!res.ok) throw new Error("Fetch error");
 
     const text = await res.text();
-      
-const cleanText = text.replace(/\r/g, "");
-const rows = cleanText.split("\n");
+
+    if (!text || text.length < 50) {
+      throw new Error("Respuesta vacía");
+    }
+
+    const rows = text.replace(/\r/g, "").split("\n");
 
     const startIndex = rows.findIndex(r =>
       r.toLowerCase().includes("descrip")
     );
 
-    if (startIndex === -1) {
-      throw new Error("No se encontró encabezado");
-    }
+    if (startIndex === -1) throw new Error("Sin encabezado");
 
-    // 👉 tomar solo datos reales
     const dataRows = rows.slice(startIndex + 1);
 
     const products = dataRows.map(row => {
-
       if (!row.trim()) return null;
 
       const cols = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
@@ -541,7 +545,6 @@ const rows = cleanText.split("\n");
 
       if (isNaN(precioUSD) || precioUSD <= 0 || precioUSD > 1000) return null;
 
-      // filtro opcional
       if (!nombre.toLowerCase().includes("piso")) return null;
 
       return {
@@ -549,34 +552,25 @@ const rows = cleanText.split("\n");
         precioUSD: precioUSD,
         image: "assets/img/pisos-flotantes.jpg"
       };
-
     }).filter(p => p !== null);
 
-    console.log("PRODUCTOS OK:", products);
-
-    if (products.length === 0) {
-      container.innerHTML = `<p class="text-center">No se encontraron productos.</p>`;
-      return;
-    }
+    if (products.length === 0) throw new Error("Sin productos");
 
     renderProducts(products);
 
-    document.getElementById("searchInput").addEventListener("input", e => {
-      const filtered = products.filter(p =>
-        p.name.toLowerCase().includes(e.target.value.toLowerCase())
-      );
-      renderProducts(filtered);
-    });
-
   } catch (error) {
-    console.error("ERROR:", error);
+    console.warn("Error, intento:", retry);
 
-    container.innerHTML = `
-      <p class="text-center">Error al cargar productos.</p>
-    `;
+    // 🔁 REINTENTO AUTOMÁTICO
+    if (retry < 2) {
+      setTimeout(() => loadProducts(retry + 1), 1000);
+      return;
+    }
+
+    container.innerHTML =
+      `<p class="text-center">Error al cargar productos.</p>`;
   }
 }
-
     function renderProducts(products) {
       const container = document.getElementById("productContainer");
       container.innerHTML = "";
