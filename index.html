@@ -481,18 +481,19 @@
 
     // ===== CATALOGO =====
 
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHpSKh2QdsHNsI4IGuzxHOgomDpzZQOkZ5C77Pu8yzfWdNEBN7zrHES_1PHKDcRg/pub?output=csv";
+   const SHEET_URL = "https://script.google.com/macros/s/AKfycbwki9tSOaA9hj9J_tvbbcbSL6dFah7hi5qgWqx7h4PhEA_POcGUdP8YKNWEuFt8mHoz/exec";
 
-    const DOLAR = 1450;
+const DOLAR = 1450;
 
-    function calcularPrecioARS(precioUSD) {
-      const costoPesos = precioUSD * DOLAR;
-      const conMargen = costoPesos * 1.5;
-      const final = conMargen + 1000;
-      return Math.round(final);
-    }
+// 💰 cálculo final con margen
+function calcularPrecioARS(precioUSD) {
+  const costoPesos = precioUSD * DOLAR;
+  const conMargen = costoPesos * 1.5;
+  const final = conMargen + 1000;
+  return Math.round(final);
+}
 
-    let productCache = null;
+let productCache = null;
 let lastGoodData = null;
 
 async function loadProducts(retry = 0) {
@@ -503,82 +504,61 @@ async function loadProducts(retry = 0) {
     return;
   }
 
-  // 🧠 si ya tenés cache válida, la usás primero
+  // 🧠 cache instantánea
   if (productCache && retry === 0) {
     renderProducts(productCache);
-    refreshInBackground(); // revalida sin bloquear UI
+    refreshInBackground();
     return;
   }
 
   const controller = new AbortController();
-
-  // ⏱ timeout Safari-safe
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
-    const url = SHEET_URL + "&t=" + Date.now() + "&nocache=" + Math.random();
-
-    const res = await fetch(url, {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
       method: "GET",
       cache: "no-store",
-      signal: controller.signal,
-      headers: {
-        "Cache-Control": "no-cache",
-        "Pragma": "no-cache"
-      }
+      signal: controller.signal
     });
 
     clearTimeout(timeout);
 
     if (!res.ok) throw new Error("Fetch error");
 
-    const text = await res.text();
+    const data = await res.json();
 
-    if (!text || text.length < 100) {
-      throw new Error("Respuesta vacía o incompleta");
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error("Respuesta inválida");
     }
 
-    const rows = text.replace(/\r/g, "").split("\n");
+    const products = data
+      .map(item => {
+        // 👉 AJUSTÁ estos nombres según tu Sheet
+        const nombre = item.Descripcion || item.descripcion || item.Nombre;
+        const precioRaw = item.Precio || item.precio;
 
-    const startIndex = rows.findIndex(r =>
-      r.toLowerCase().includes("descrip")
-    );
+        if (!nombre || !precioRaw) return null;
 
-    if (startIndex === -1) throw new Error("Sin encabezado");
+        const match = String(precioRaw).match(/\d+(\.\d+)?/);
+        if (!match) return null;
 
-    const dataRows = rows.slice(startIndex + 1);
+        const precioUSD = parseFloat(match[0]);
 
-    const products = dataRows.map(row => {
-      if (!row.trim()) return null;
+        if (isNaN(precioUSD) || precioUSD <= 0 || precioUSD > 1000) return null;
 
-      const cols = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+        if (!nombre.toLowerCase().includes("piso")) return null;
 
-      if (cols.length < 4) return null;
-
-      const nombre = cols[1]?.trim();
-      const precioRaw = cols[3]?.trim();
-
-      if (!nombre || !precioRaw) return null;
-
-      const match = precioRaw.match(/\d+(\.\d+)?/);
-      if (!match) return null;
-
-      const precioUSD = parseFloat(match[0]);
-
-      if (isNaN(precioUSD) || precioUSD <= 0 || precioUSD > 1000) return null;
-
-      if (!nombre.toLowerCase().includes("piso")) return null;
-
-      return {
-        name: nombre,
-        precioUSD,
-        image: "assets/img/pisos-flotantes.jpg"
-      };
-    }).filter(Boolean);
+        return {
+          name: nombre,
+          precioUSD,
+          precioARS: calcularPrecioARS(precioUSD),
+          image: "assets/img/pisos-flotantes.jpg"
+        };
+      })
+      .filter(Boolean);
 
     if (products.length === 0) throw new Error("Sin productos válidos");
 
-    // 💾 guardás cache buena
     productCache = products;
     lastGoodData = products;
 
@@ -589,20 +569,12 @@ async function loadProducts(retry = 0) {
 
     clearTimeout(timeout);
 
-    // 🔁 retry con backoff real
     if (retry < 2) {
-      const delay = 800 * (retry + 1);
-
-      setTimeout(() => {
-        loadProducts(retry + 1);
-      }, delay);
-
+      setTimeout(() => loadProducts(retry + 1), 800 * (retry + 1));
       return;
     }
 
-    // 🧠 fallback inteligente (CLAVE)
     if (lastGoodData) {
-      console.warn("Usando cache anterior");
       renderProducts(lastGoodData);
       return;
     }
@@ -612,39 +584,37 @@ async function loadProducts(retry = 0) {
   }
 }
 
-/* 🔄 revalidación en background (no rompe UX) */
+/* 🔄 revalidación silenciosa */
 async function refreshInBackground() {
   try {
-    const url = SHEET_URL + "&t=" + Date.now() + "&nocache=" + Math.random();
+    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
 
-    const res = await fetch(url, { cache: "no-store" });
-    const text = await res.text();
+    const data = await res.json();
 
-    const rows = text.replace(/\r/g, "").split("\n");
-    const startIndex = rows.findIndex(r => r.toLowerCase().includes("descrip"));
+    if (!Array.isArray(data)) return;
 
-    if (startIndex === -1) return;
+    const products = data
+      .map(item => {
+        const nombre = item.Descripcion || item.descripcion || item.Nombre;
+        const precioRaw = item.Precio || item.precio;
 
-    const dataRows = rows.slice(startIndex + 1);
+        if (!nombre || !precioRaw) return null;
 
-    const products = dataRows.map(row => {
-      const cols = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
-      if (cols.length < 4) return null;
+        const match = String(precioRaw).match(/\d+(\.\d+)?/);
+        if (!match) return null;
 
-      const nombre = cols[1]?.trim();
-      const precioRaw = cols[3]?.trim();
-      const match = precioRaw?.match(/\d+(\.\d+)?/);
+        const precioUSD = parseFloat(match[0]);
 
-      if (!nombre || !match) return null;
-
-      const precioUSD = parseFloat(match[0]);
-
-      return {
-        name: nombre,
-        precioUSD,
-        image: "assets/img/pisos-flotantes.jpg"
-      };
-    }).filter(Boolean);
+        return {
+          name: nombre,
+          precioUSD,
+          precioARS: calcularPrecioARS(precioUSD),
+          image: "assets/img/pisos-flotantes.jpg"
+        };
+      })
+      .filter(Boolean);
 
     if (products.length > 0) {
       productCache = products;
