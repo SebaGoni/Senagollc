@@ -571,9 +571,7 @@ async function loadProducts(retry = 0) {
   // ZOCALOS
   if (
     t.includes("zocalo") ||
-    t.includes("zócalo") ||
     t.includes("cable zocalo") ||
-    t.includes("cable zócalo")
   ) return "zocalos";
 
   return null;
@@ -621,7 +619,7 @@ allProducts = data.map(item => {
   }
 }
 
-    function filterCategory(cat) {
+  function filterCategory(cat) {
 
   let filtered = [];
 
@@ -636,28 +634,31 @@ allProducts = data.map(item => {
 
       if (cat === "revestimientos") {
         return t.includes("revestimiento interior") ||
+               t.includes("placa uv") ||
                t.includes("placas uv") ||
                t.includes("decopanel");
       }
 
-      if (cat === "deck") return t.includes("deck");
+      if (cat === "deck") {
+        return t.includes("deck") && t.includes("wpc");
+      }
 
       if (cat === "outdoor") {
         return t.includes("cerco") ||
                t.includes("cesped") ||
-               t.includes("césped") ||
-               t.includes("jardin") ||
-               t.includes("jardín") ||
+               t.includes("jardin vertical") ||
                t.includes("reflector") ||
                t.includes("lampara") ||
-               t.includes("lámpara") ||
                t.includes("siding") ||
                t.includes("viga") ||
                t.includes("wall panel exterior") ||
                t.includes("revestimiento exterior");
       }
 
-      if (cat === "zocalos") return t.includes("zocalo");
+      if (cat === "zocalos") {
+        return t.includes("zocalo") ||
+               t.includes("cable zocalo");
+      }
 
       return false;
     });
