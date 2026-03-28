@@ -481,7 +481,7 @@
 
 // ===== CATALOGO =====
 
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwtmbHYbeB8ayC5Wm514kN7VAbiIdT732Z0dpRoXV96DtX_XgeAG-ruX0lx6kuqB8MZ/exec";
 
 const DOLAR = 1450;
     
@@ -525,11 +525,45 @@ async function loadProducts(retry = 0) {
 
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
-    allProducts = data.map(item => ({
-      name: item.descripcion,
-      precioUSD: parseFloat(item.precio),
-      image: "assets/img/pisos-flotantes.jpg"
-    })).filter(p => !isNaN(p.precioUSD));
+    function getCategory(text) {
+  const t = text.toLowerCase();
+
+  if (t.includes("spc") && t.includes("click")) return "spc";
+  if (t.includes("revestimiento interior") || t.includes("placas uv") || t.includes("decopanel")) return "revestimientos";
+  if (t.includes("deck wpc") || t.includes("deck de wpc")) return "deck";
+  if (
+    t.includes("cerco") ||
+    t.includes("césped") ||
+    t.includes("cesped") ||
+    t.includes("jardín vertical") ||
+    t.includes("jardin vertical") ||
+    t.includes("reflector") ||
+    t.includes("lámpara") ||
+    t.includes("lampara") ||
+    t.includes("siding") ||
+    t.includes("viga") ||
+    t.includes("wall panel exterior") ||
+    t.includes("revestimiento exterior")
+  ) return "outdoor";
+  if (t.includes("zócalo") || t.includes("zocalo") || t.includes("cable zócalo")) return "zocalos";
+
+  return null;
+}
+
+const categoriasPermitidas = ["spc", "revestimientos", "deck", "outdoor", "zocalos"];
+
+allProducts = data.map(item => {
+  const categoria = getCategory(item.descripcion || "");
+
+  return {
+    name: item.descripcion,
+    precioUSD: parseFloat(item.precio),
+    category: categoria,
+    image: "assets/img/pisos-flotantes.jpg"
+  };
+})
+.filter(p => !isNaN(p.precioUSD))
+.filter(p => categoriasPermitidas.includes(p.category));
 
     shownProducts = 20;
 
@@ -595,6 +629,39 @@ function loadMore() {
     
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
+});
+    document.getElementById("searchInput").addEventListener("input", function(e) {
+  const term = e.target.value.toLowerCase();
+
+  const filtered = allProducts.filter(p => 
+    p.name.toLowerCase().includes(term)
+  );
+
+  const container = document.getElementById("productContainer");
+
+  let html = "";
+
+  filtered.slice(0, shownProducts).forEach(p => {
+    const precioARS = Math.round(p.precioUSD * DOLAR * 1.5 + 1000);
+
+    const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+    const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+
+    html += `
+      <div class="col-md-3">
+        <div class="product-card">
+          <img src="${p.image}" loading="lazy">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+          <a href="${link}" target="_blank">
+            <button class="whatsapp-btn">Consultar</button>
+          </a>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 });
 </script>
 
