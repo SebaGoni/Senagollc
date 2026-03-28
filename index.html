@@ -539,7 +539,7 @@ async function loadProducts(retry = 0) {
   const t = text.toLowerCase();
 
   // SPC
-  if (t.includes("spc")) return "spc";
+  if (t.includes("spc") && t.includes("click")) return "spc";
 
   // REVESTIMIENTOS
   if (
@@ -602,7 +602,7 @@ allProducts = data.map(item => {
   };
 })
 .filter(p => !isNaN(p.precioUSD))
-.filter(p => categoriasPermitidas.includes(p.category));
+//.filter(p => categoriasPermitidas.includes(p.category));
 
     shownProducts = 20;
 
@@ -622,12 +622,46 @@ allProducts = data.map(item => {
 }
 
     function filterCategory(cat) {
-  if (cat === "all") {
-    renderProducts();
-    return;
-  }
 
-  const filtered = allProducts.filter(p => p.category === cat);
+  let filtered = [];
+
+  if (cat === "all") {
+    filtered = allProducts;
+  } else {
+    filtered = allProducts.filter(p => {
+
+      const t = p.texto;
+
+      if (cat === "spc") return t.includes("spc") && t.includes("click");
+
+      if (cat === "revestimientos") {
+        return t.includes("revestimiento interior") ||
+               t.includes("placas uv") ||
+               t.includes("decopanel");
+      }
+
+      if (cat === "deck") return t.includes("deck");
+
+      if (cat === "outdoor") {
+        return t.includes("cerco") ||
+               t.includes("cesped") ||
+               t.includes("césped") ||
+               t.includes("jardin") ||
+               t.includes("jardín") ||
+               t.includes("reflector") ||
+               t.includes("lampara") ||
+               t.includes("lámpara") ||
+               t.includes("siding") ||
+               t.includes("viga") ||
+               t.includes("wall panel exterior") ||
+               t.includes("revestimiento exterior");
+      }
+
+      if (cat === "zocalos") return t.includes("zocalo");
+
+      return false;
+    });
+  }
 
   const container = document.getElementById("productContainer");
 
