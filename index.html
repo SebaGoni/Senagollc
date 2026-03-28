@@ -521,6 +521,8 @@ async function loadProducts(retry = 0) {
 
     renderProducts();
 
+    localStorage.setItem("mdq_products_cache", JSON.stringify(products));
+
   } catch (err) {
     console.warn(err);
 
@@ -534,7 +536,18 @@ async function loadProducts(retry = 0) {
 
 function renderProducts() {
   const container = document.getElementById("productContainer");
+  
+const cache = localStorage.getItem("mdq_products_cache");
 
+if (cache && retry === 0) {
+  try {
+    allProducts = JSON.parse(cache);
+    renderProducts();
+  } catch (e) {
+    console.warn("Cache corrupto");
+  }
+  return;
+}
   const visible = allProducts.slice(0, shownProducts);
 
   let html = "";
