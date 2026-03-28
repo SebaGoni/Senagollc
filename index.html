@@ -484,7 +484,10 @@
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
 
 const DOLAR = 1450;
-
+    
+let allProducts = [];
+let shownProducts = 20;
+    
 function calcularPrecioARS(precioUSD) {
   return Math.round(precioUSD * DOLAR * 1.5 + 1000);
 }
@@ -495,16 +498,7 @@ let lastGoodData = null;
 async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
-  if (!container) {
-    console.error("No existe productContainer");
-    return;
-  }
-
-  // cache instantáneo
-  if (productCache && retry === 0) {
-    renderProducts(productCache);
-    return;
-  }
+  if (!container) return;
 
   container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
 
@@ -513,57 +507,40 @@ async function loadProducts(retry = 0) {
       cache: "no-store"
     });
 
-    if (!res.ok) throw new Error("HTTP " + res.status);
-
     const data = await res.json();
-
-    console.log("DATA RAW:", data);
 
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
-    const products = data
-      .map(item => {
-        const nombre = item.descripcion;
-        const precio = parseFloat(item.precio);
+    allProducts = data.map(item => ({
+      name: item.descripcion,
+      precioUSD: parseFloat(item.precio),
+      image: "assets/img/pisos-flotantes.jpg"
+    })).filter(p => !isNaN(p.precioUSD));
 
-        if (!nombre || isNaN(precio)) return null;
+    shownProducts = 20;
 
-        return {
-          name: nombre,
-          precioUSD: precio,
-          precioARS: calcularPrecioARS(precio),
-          image: "assets/img/pisos-flotantes.jpg"
-        };
-      })
-      .filter(Boolean);
-
-    if (products.length === 0) throw new Error("Sin productos válidos");
-
-    productCache = products;
-    lastGoodData = products;
-
-    renderProducts(products);
+    renderProducts();
 
   } catch (err) {
-    console.warn("Error loadProducts:", err.message);
+    console.warn(err);
 
     if (retry < 2) {
       setTimeout(() => loadProducts(retry + 1), 800);
-    } else if (lastGoodData) {
-      renderProducts(lastGoodData);
     } else {
-      container.innerHTML = "<p class='text-center'>Error al cargar productos</p>";
+      container.innerHTML = "<p>Error al cargar productos</p>";
     }
   }
 }
 
-function renderProducts(products) {
+function renderProducts() {
   const container = document.getElementById("productContainer");
+
+  const visible = allProducts.slice(0, shownProducts);
 
   let html = "";
 
-  products.forEach(p => {
-    const precioARS = calcularPrecioARS(p.precioUSD);
+  visible.forEach(p => {
+    const precioARS = Math.round(p.precioUSD * DOLAR * 1.5 + 1000);
 
     const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
     const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
@@ -571,7 +548,7 @@ function renderProducts(products) {
     html += `
       <div class="col-md-3">
         <div class="product-card">
-          <img src="${p.image}" alt="${p.name}">
+          <img src="${p.image}" loading="lazy">
           <div class="product-title">${p.name}</div>
           <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
           <a href="${link}" target="_blank">
@@ -583,8 +560,24 @@ function renderProducts(products) {
   });
 
   container.innerHTML = html;
-}
 
+  // botón "ver más"
+  if (shownProducts < allProducts.length) {
+    container.innerHTML += `
+      <div class="text-center col-12 mt-3">
+        <button onclick="loadMore()" class="btn btn-primary">
+          Ver más productos
+        </button>
+      </div>
+    `;
+  }
+}
+    
+function loadMore() {
+  shownProducts += 20;
+  renderProducts();
+}
+    
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
 });
