@@ -387,10 +387,20 @@
     </div>
 
     <div class="row mb-4">
-      <div class="col-md-4 mx-auto">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto...">
-      </div>
-    </div>
+  <div class="col-md-4 mx-auto">
+    <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto...">
+  </div>
+</div>
+
+<!-- BOTONES DE CATEGORIAS -->
+<div class="text-center mb-4">
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('all')">Todos</button>
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('spc')">SPC</button>
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('revestimientos')">Revestimientos</button>
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('deck')">Deck</button>
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('outdoor')">Outdoor</button>
+  <button class="btn btn-outline-dark m-1" onclick="filterCategory('zocalos')">Zócalos</button>
+</div>
 
     <div class="row g-4" id="productContainer"></div>
   </div>
@@ -580,6 +590,41 @@ allProducts = data.map(item => {
       container.innerHTML = "<p>Error al cargar productos</p>";
     }
   }
+}
+
+    function filterCategory(cat) {
+  if (cat === "all") {
+    renderProducts();
+    return;
+  }
+
+  const filtered = allProducts.filter(p => p.category === cat);
+
+  const container = document.getElementById("productContainer");
+
+  let html = "";
+
+  filtered.slice(0, shownProducts).forEach(p => {
+    const precioARS = Math.round(p.precioUSD * DOLAR * 1.5 + 1000);
+
+    const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+    const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+
+    html += `
+      <div class="col-md-3">
+        <div class="product-card">
+          <img src="${p.image}" loading="lazy">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+          <a href="${link}" target="_blank">
+            <button class="whatsapp-btn">Consultar</button>
+          </a>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html || "<p class='text-center'>No hay productos en esta categoría</p>";
 }
 
 function renderProducts() {
