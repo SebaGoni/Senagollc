@@ -557,19 +557,16 @@ async function loadProducts(retry = 0) {
 
   // OUTDOOR
   if (
-    t.includes("cerco") ||
-    t.includes("cesped") ||
-    t.includes("césped") ||
-    t.includes("jardin vertical") ||
-    t.includes("jardín vertical") ||
-    t.includes("reflector") ||
-    t.includes("lampara") ||
-    t.includes("lámpara") ||
-    t.includes("siding") ||
-    t.includes("viga") ||
-    t.includes("wall panel exterior") ||
-    t.includes("revestimiento exterior")
-  ) return "outdoor";
+  t.includes("cerco") ||
+  t.includes("cesped") ||
+  (t.includes("jardin") && t.includes("vertical")) ||
+  t.includes("reflector") ||
+  t.includes("lampara") ||
+  t.includes("siding") ||
+  t.includes("viga") ||
+  t.includes("wall panel exterior") ||
+  t.includes("revestimiento exterior")
+) return "outdoor";
 
   // ZOCALOS
   if (
