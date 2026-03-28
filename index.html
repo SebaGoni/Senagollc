@@ -538,24 +538,46 @@ async function loadProducts(retry = 0) {
     function getCategory(text) {
   const t = text.toLowerCase();
 
-  if (t.includes("spc") && t.includes("click")) return "spc";
-  if (t.includes("revestimiento interior") || t.includes("placas uv") || t.includes("decopanel")) return "revestimientos";
-  if (t.includes("deck wpc") || t.includes("deck de wpc")) return "deck";
+  // SPC
+  if (t.includes("spc")) return "spc";
+
+  // REVESTIMIENTOS
+  if (
+    t.includes("revestimiento interior") ||
+    t.includes("placa uv") ||
+    t.includes("placas uv") ||
+    t.includes("decopanel")
+  ) return "revestimientos";
+
+  // DECK (solo si tiene deck + wpc)
+  if (
+    (t.includes("deck") && t.includes("wpc")) ||
+    t.includes("deck wpc")
+  ) return "deck";
+
+  // OUTDOOR
   if (
     t.includes("cerco") ||
-    t.includes("césped") ||
     t.includes("cesped") ||
-    t.includes("jardín vertical") ||
+    t.includes("césped") ||
     t.includes("jardin vertical") ||
+    t.includes("jardín vertical") ||
     t.includes("reflector") ||
-    t.includes("lámpara") ||
     t.includes("lampara") ||
+    t.includes("lámpara") ||
     t.includes("siding") ||
     t.includes("viga") ||
     t.includes("wall panel exterior") ||
     t.includes("revestimiento exterior")
   ) return "outdoor";
-  if (t.includes("zócalo") || t.includes("zocalo") || t.includes("cable zócalo")) return "zocalos";
+
+  // ZOCALOS
+  if (
+    t.includes("zocalo") ||
+    t.includes("zócalo") ||
+    t.includes("cable zocalo") ||
+    t.includes("cable zócalo")
+  ) return "zocalos";
 
   return null;
 }
@@ -563,13 +585,20 @@ async function loadProducts(retry = 0) {
 const categoriasPermitidas = ["spc", "revestimientos", "deck", "outdoor", "zocalos"];
 
 allProducts = data.map(item => {
-  const categoria = getCategory(item.descripcion || "");
+  const descripcion = item.descripcion || "";
+  const detalle = item.detalle || "";
+
+  // 🔥 normalizamos TODO
+  const texto = (descripcion + " " + detalle).toLowerCase();
+
+  const categoria = getCategory(texto);
 
   return {
-    name: item.descripcion,
+    name: descripcion,
     precioUSD: parseFloat(item.precio),
     category: categoria,
-    image: "assets/img/pisos-flotantes.jpg"
+    image: "assets/img/pisos-flotantes.jpg",
+    texto: texto // 👈 opcional pero útil para debug o filtros futuros
   };
 })
 .filter(p => !isNaN(p.precioUSD))
