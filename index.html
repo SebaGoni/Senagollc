@@ -479,7 +479,7 @@
     }, appearOptions);
     faders.forEach(fader => appearOnScroll.observe(fader));
 
-    // ===== CATALOGO =====
+// ===== CATALOGO =====
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyVdtx_BkoYHYggwtux3EGPOzulA6FBCwwTIa79kQ-2iMs_OpI7pFaO1e-QeA8Dbkp_/exec";
 
@@ -492,9 +492,6 @@ function calcularPrecioARS(precioUSD) {
 let productCache = null;
 let lastGoodData = null;
 
-/* =========================
-   LOAD PRODUCTS (FETCH FIX)
-========================= */
 async function loadProducts(retry = 0) {
   const container = document.getElementById("productContainer");
 
@@ -509,7 +506,7 @@ async function loadProducts(retry = 0) {
     return;
   }
 
-  container.innerHTML = "Cargando productos...";
+  container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
 
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
@@ -521,28 +518,20 @@ async function loadProducts(retry = 0) {
     const data = await res.json();
 
     console.log("DATA RAW:", data);
-    console.log("COLUMNAS:", Object.keys(data[0] || {}));
 
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
     const products = data
       .map(item => {
-        const nombre = item["Descripción"];
-        const precioRaw = item["Precio (*)"];
+        const nombre = item.descripcion;
+        const precio = parseFloat(item.precio);
 
-        if (!nombre || !precioRaw) return null;
-
-        const match = String(precioRaw).match(/\d+(\.\d+)?/);
-        if (!match) return null;
-
-        const precioUSD = parseFloat(match[0]);
-
-        if (isNaN(precioUSD) || precioUSD <= 0) return null;
+        if (!nombre || isNaN(precio)) return null;
 
         return {
           name: nombre,
-          precioUSD,
-          precioARS: calcularPrecioARS(precioUSD),
+          precioUSD: precio,
+          precioARS: calcularPrecioARS(precio),
           image: "assets/img/pisos-flotantes.jpg"
         };
       })
@@ -563,36 +552,40 @@ async function loadProducts(retry = 0) {
     } else if (lastGoodData) {
       renderProducts(lastGoodData);
     } else {
-      container.innerHTML = `<p class="text-center">Error al cargar productos</p>`;
+      container.innerHTML = "<p class='text-center'>Error al cargar productos</p>";
     }
   }
 }
-    function renderProducts(products) {
-      const container = document.getElementById("productContainer");
-      container.innerHTML = "";
 
-      products.forEach(p => {
-        const precioARS = calcularPrecioARS(p.precioUSD);
+function renderProducts(products) {
+  const container = document.getElementById("productContainer");
 
-        const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-        const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+  let html = "";
 
-        container.innerHTML += `
-          <div class="col-md-3">
-            <div class="product-card">
-              <img src="${p.image}">
-              <div class="product-title">${p.name}</div>
-              <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-              <a href="${link}" target="_blank">
-                <button class="whatsapp-btn">Consultar</button>
-              </a>
-            </div>
-          </div>
-        `;
-      });
-    }
+  products.forEach(p => {
+    const precioARS = calcularPrecioARS(p.precioUSD);
 
-    document.addEventListener("DOMContentLoaded", function() {
+    const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
+    const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+
+    html += `
+      <div class="col-md-3">
+        <div class="product-card">
+          <img src="${p.image}" alt="${p.name}">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
+          <a href="${link}" target="_blank">
+            <button class="whatsapp-btn">Consultar</button>
+          </a>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
 });
 </script>
