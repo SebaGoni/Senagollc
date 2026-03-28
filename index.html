@@ -502,6 +502,20 @@ async function loadProducts(retry = 0) {
 
   container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
 
+  // CACHE FIRST (solo acá)
+  const cache = localStorage.getItem("mdq_products_cache");
+
+  if (cache && retry === 0) {
+    try {
+      allProducts = JSON.parse(cache);
+      shownProducts = 20;
+      renderProducts();
+      return;
+    } catch (e) {
+      console.warn("Cache corrupto");
+    }
+  }
+
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
       cache: "no-store"
@@ -519,9 +533,9 @@ async function loadProducts(retry = 0) {
 
     shownProducts = 20;
 
-    renderProducts();
+    localStorage.setItem("mdq_products_cache", JSON.stringify(allProducts));
 
-    localStorage.setItem("mdq_products_cache", JSON.stringify(products));
+    renderProducts();
 
   } catch (err) {
     console.warn(err);
@@ -536,18 +550,7 @@ async function loadProducts(retry = 0) {
 
 function renderProducts() {
   const container = document.getElementById("productContainer");
-  
-const cache = localStorage.getItem("mdq_products_cache");
 
-if (cache && retry === 0) {
-  try {
-    allProducts = JSON.parse(cache);
-    renderProducts();
-  } catch (e) {
-    console.warn("Cache corrupto");
-  }
-  return;
-}
   const visible = allProducts.slice(0, shownProducts);
 
   let html = "";
@@ -574,7 +577,6 @@ if (cache && retry === 0) {
 
   container.innerHTML = html;
 
-  // botón "ver más"
   if (shownProducts < allProducts.length) {
     container.innerHTML += `
       <div class="text-center col-12 mt-3">
