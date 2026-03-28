@@ -589,7 +589,10 @@ allProducts = data.map(item => {
   const detalle = item.detalle || "";
 
   // 🔥 normalizamos TODO
-  const texto = (descripcion + " " + detalle).toLowerCase();
+  const texto = (descripcion + " " + detalle)
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "");
 
   const categoria = getCategory(texto);
 
