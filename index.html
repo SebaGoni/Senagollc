@@ -394,7 +394,6 @@
 
 <!-- BOTONES DE CATEGORIAS -->
 <div class="text-center mb-4">
-  <button class="btn btn-outline-dark m-1" onclick="filterCategory('all')">Todos</button>
   <button class="btn btn-outline-dark m-1" onclick="filterCategory('pisos vinilicos')">Pisos Vinílicos</button>
   <button class="btn btn-outline-dark m-1" onclick="filterCategory('revestimientos')">Revestimientos</button>
   <button class="btn btn-outline-dark m-1" onclick="filterCategory('deck')">Deck</button>
@@ -501,7 +500,7 @@
         return Math.round(precioUSD * DOLAR * 1.21 * 1.5 + 1000);
     }
 
-    async function loadProducts(retry = 0) {
+    async function loadProductsWithCallback(callback, retry = 0) { {
         const container = document.getElementById("productContainer");
         if (!container) return;
 
@@ -593,6 +592,8 @@
 
             localStorage.setItem("mdq_products_cache", JSON.stringify(allProducts));
 
+            if (callback) callback();
+            
             renderProducts();
 
         } catch (err) {
@@ -654,7 +655,6 @@
     });
   }
 
-  // 🔥 IMPORTANTE: resetear cantidad
   shownProducts = 10;
 
   renderFilteredProducts(filtered);
@@ -732,8 +732,14 @@
         renderProducts();
     }
 
+    function loadProductsAndStart() {
+  loadProductsWithCallback(() => {
+    filterCategory("pisos vinilicos");
+  });
+}
+
     document.addEventListener("DOMContentLoaded", function () {
-        loadProducts();
+  loadProductsAndStart();
     });
 
     document.getElementById("searchInput").addEventListener("input", function(e) {
