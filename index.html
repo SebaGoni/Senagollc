@@ -490,177 +490,153 @@
 
     // ===== CATALOGO =====
 
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbwtmbHYbeB8ayC5Wm514kN7VAbiIdT732Z0dpRoXV96DtX_XgeAG-ruX0lx6kuqB8MZ/exec";
-    const DOLAR = 1450;
-    
-    let allProducts = [];
-    let shownProducts = 10; // ✅ CAMBIO
-    
-    function calcularPrecioARS(precioUSD) {
-        return Math.round(precioUSD * DOLAR * 1.21 * 1.5 + 1000);
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwtmbHYbeB8ayC5Wm514kN7VAbiIdT732Z0dpRoXV96DtX_XgeAG-ruX0lx6kuqB8MZ/exec";
+const DOLAR = 1450;
+
+let allProducts = [];
+let shownProducts = 10;
+let currentFilter = "pisos vinilicos"; // 🔥 estado actual
+
+function calcularPrecioARS(precioUSD) {
+  return Math.round(precioUSD * DOLAR * 1.21 * 1.5 + 1000);
+}
+
+// ================= LOAD =================
+
+async function loadProductsWithCallback(callback, retry = 0) {
+  const container = document.getElementById("productContainer");
+  if (!container) return;
+
+  container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
+
+  const cache = localStorage.getItem("mdq_products_cache");
+
+  if (cache && retry === 0) {
+    try {
+      allProducts = JSON.parse(cache);
+      shownProducts = 10;
+
+      if (callback) {
+        callback();
+      } else {
+        renderProducts();
+      }
+      return;
+
+    } catch (e) {
+      console.warn("Cache corrupto");
+    }
+  }
+
+  try {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error("Formato inválido");
+
+    function getCategory(text) {
+      const t = text.toLowerCase();
+
+      if (t.includes("spc") || t.includes("click") || t.includes("vinilico"))
+        return "pisos vinilicos";
+
+      if (t.includes("revestimiento") || t.includes("placa uv") || t.includes("placas uv") || t.includes("decopanel"))
+        return "revestimientos";
+
+      if ((t.includes("deck") && t.includes("wpc")) || t.includes("deck wpc"))
+        return "deck";
+
+      if (t.includes("cerco") || t.includes("cesped") || t.includes("jardin") || t.includes("reflector") || t.includes("lampara") || t.includes("siding") || t.includes("viga") || t.includes("wall panel exterior") || t.includes("revestimiento exterior"))
+        return "outdoor";
+
+      if (t.includes("zocalo") || t.includes("cable zocalo"))
+        return "zocalos";
+
+      return null;
     }
 
-    async function loadProductsWithCallback(callback, retry = 0) { {
-        const container = document.getElementById("productContainer");
-        if (!container) return;
+    allProducts = data.map(item => {
+      const descripcion = item.descripcion || "";
+      const detalle = item.detalle || "";
 
-        container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
+      const texto = (descripcion + " " + detalle)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-        const cache = localStorage.getItem("mdq_products_cache");
+      return {
+        name: descripcion,
+        precioUSD: parseFloat(item.precio),
+        category: getCategory(texto),
+        image: "assets/img/pisos-flotantes.jpg",
+        texto: texto
+      };
+    }).filter(p => !isNaN(p.precioUSD));
 
-        if (cache && retry === 0) {
-            try {
-                allProducts = JSON.parse(cache);
-                shownProducts = 10;
-                renderProducts();
-                return;
-            } catch (e) {
-                console.warn("Cache corrupto");
-            }
-        }
+    shownProducts = 10;
 
-        try {
-            const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
-                cache: "no-store"
-            });
+    localStorage.setItem("mdq_products_cache", JSON.stringify(allProducts));
 
-            const data = await res.json();
-            if (!Array.isArray(data)) throw new Error("Formato inválido");
-
-            function getCategory(text) {
-                const t = text.toLowerCase();
-
-                if (
-                    t.includes("spc") ||
-                    t.includes("click") ||
-                    t.includes("vinilico")
-                ) return "pisos vinilicos";
-
-                if (
-                    t.includes("revestimiento") ||
-                    t.includes("placa uv") ||
-                    t.includes("placas uv") ||
-                    t.includes("decopanel")
-                ) return "revestimientos";
-
-                if (
-                    (t.includes("deck") && t.includes("wpc")) ||
-                    t.includes("deck wpc")
-                ) return "deck";
-
-                if (
-                    t.includes("cerco") ||
-                    t.includes("cesped") ||
-                    t.includes("jardin vertical") ||
-                    t.includes("reflector") ||
-                    t.includes("lampara") ||
-                    t.includes("siding") ||
-                    t.includes("viga") ||
-                    t.includes("wall panel exterior") ||
-                    t.includes("revestimiento exterior")
-                ) return "outdoor";
-
-                if (
-                    t.includes("zocalo") ||
-                    t.includes("cable zocalo")
-                ) return "zocalos";
-
-                return null;
-            }
-
-            allProducts = data.map(item => {
-                const descripcion = item.descripcion || "";
-                const detalle = item.detalle || "";
-
-                const texto = (descripcion + " " + detalle)
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "");
-
-                const categoria = getCategory(texto);
-
-                return {
-                    name: descripcion,
-                    precioUSD: parseFloat(item.precio),
-                    category: categoria,
-                    image: "assets/img/pisos-flotantes.jpg",
-                    texto: texto
-                };
-            }).filter(p => !isNaN(p.precioUSD));
-
-            shownProducts = 10;
-
-            localStorage.setItem("mdq_products_cache", JSON.stringify(allProducts));
-
-            if (callback) callback();
-            
-            renderProducts();
-
-        } catch (err) {
-            console.warn(err);
-
-            if (retry < 2) {
-                setTimeout(() => loadProducts(retry + 1), 800);
-            } else {
-                container.innerHTML = "<p>Error al cargar productos</p>";
-            }
-        }
+    if (callback) {
+      callback();
+    } else {
+      renderProducts();
     }
 
-    function filterCategory(cat) {
+  } catch (err) {
+    console.warn(err);
 
-  let filtered = [];
+    if (retry < 2) {
+      setTimeout(() => loadProductsWithCallback(callback, retry + 1), 800);
+    } else {
+      container.innerHTML = "<p>Error al cargar productos</p>";
+    }
+  }
+}
 
-  if (cat === "all") {
-    filtered = allProducts;
-  } else {
+// ================= FILTRO =================
+
+function filterCategory(cat) {
+  currentFilter = cat;
+  shownProducts = 10;
+
+  applyFilters();
+}
+
+function applyFilters() {
+  let filtered = allProducts;
+
+  if (currentFilter !== "all") {
     filtered = allProducts.filter(p => {
-
       const t = p.texto;
 
-      if (cat === "pisos vinilicos") {
-        return t.includes("spc") || 
-               t.includes("click") || 
-               t.includes("vinilico");
-      }
+      if (currentFilter === "pisos vinilicos")
+        return t.includes("spc") || t.includes("click") || t.includes("vinilico");
 
-      if (cat === "revestimientos") {
-        return t.includes("revestimiento") ||
-               t.includes("placa uv") ||
-               t.includes("placas uv") ||
-               t.includes("decopanel");
-      }
+      if (currentFilter === "revestimientos")
+        return t.includes("revestimiento") || t.includes("placa uv") || t.includes("decopanel");
 
-      if (cat === "deck") {
+      if (currentFilter === "deck")
         return t.includes("deck");
-      }
 
-      if (cat === "outdoor") {
-        return t.includes("cerco") ||
-               t.includes("cesped") ||
-               t.includes("jardin") ||
-               t.includes("reflector") ||
-               t.includes("lampara") ||
-               t.includes("siding") ||
-               t.includes("viga") ||
-               t.includes("wall panel exterior") ||
-               t.includes("revestimiento exterior");
-      }
+      if (currentFilter === "outdoor")
+        return t.includes("cerco") || t.includes("cesped") || t.includes("jardin");
 
-      if (cat === "zocalos") {
+      if (currentFilter === "zocalos")
         return t.includes("zocalo");
-      }
 
       return false;
     });
   }
 
-  shownProducts = 10;
-
   renderFilteredProducts(filtered);
 }
 
-    function renderFilteredProducts(products) {
+// ================= RENDER =================
+
+function renderFilteredProducts(products) {
   const container = document.getElementById("productContainer");
 
   let html = "";
@@ -686,95 +662,52 @@
   });
 
   container.innerHTML = html || "<p class='text-center'>No hay productos en esta categoría</p>";
+
+  if (shownProducts < products.length) {
+    container.innerHTML += `
+      <div class="text-center col-12 mt-3">
+        <button onclick="loadMore()" class="btn btn-primary">
+          Ver más productos
+        </button>
+      </div>
+    `;
+  }
 }
 
-    function renderProducts() {
-        const container = document.getElementById("productContainer");
-        const visible = allProducts.slice(0, shownProducts);
+function renderProducts() {
+  renderFilteredProducts(allProducts);
+}
 
-        let html = "";
+// ================= LOAD MORE =================
 
-        visible.forEach(p => {
-            const precioARS = calcularPrecioARS(p.precioUSD);
+function loadMore() {
+  shownProducts += 10;
+  applyFilters(); // 🔥 clave: respeta filtro actual
+}
 
-            const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-            const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
+// ================= INIT =================
 
-            html += `
-                <div class="col-6 col-md-4 col-lg-3"> <!-- ✅ RESPONSIVE -->
-                    <div class="product-card">
-                        <img src="${p.image}" loading="lazy">
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-                        <a href="${link}" target="_blank">
-                            <button class="whatsapp-btn">Consultar</button>
-                        </a>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-
-        if (shownProducts < allProducts.length) {
-            container.innerHTML += `
-                <div class="text-center col-12 mt-3">
-                    <button onclick="loadMore()" class="btn btn-primary">
-                        Ver más productos
-                    </button>
-                </div>
-            `;
-        }
-    }
-
-    function loadMore() {
-        shownProducts += 10; // ✅ CAMBIO
-        renderProducts();
-    }
-
-    function loadProductsAndStart() {
+function loadProductsAndStart() {
   loadProductsWithCallback(() => {
-    filterCategory("pisos vinilicos");
+    filterCategory("pisos vinilicos"); // 🔥 carga inicial
   });
 }
 
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
   loadProductsAndStart();
-    });
+});
 
-    document.getElementById("searchInput").addEventListener("input", function(e) {
-        const term = e.target.value.toLowerCase();
+// ================= SEARCH =================
 
-        const filtered = allProducts.filter(p => 
-            p.name.toLowerCase().includes(term)
-        );
+document.getElementById("searchInput").addEventListener("input", function(e) {
+  const term = e.target.value.toLowerCase();
 
-        const container = document.getElementById("productContainer");
+  const filtered = allProducts.filter(p => 
+    p.name.toLowerCase().includes(term)
+  );
 
-        let html = "";
-
-        filtered.slice(0, shownProducts).forEach(p => {
-            const precioARS = calcularPrecioARS(p.precioUSD);
-
-            const whatsappText = `Hola! Quiero consultar por ${p.name}. Precio: $${precioARS.toLocaleString("es-AR")}`;
-            const link = `https://wa.me/5492236823388?text=${encodeURIComponent(whatsappText)}`;
-
-            html += `
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product-card">
-                        <img src="${p.image}" loading="lazy">
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
-                        <a href="${link}" target="_blank">
-                            <button class="whatsapp-btn">Consultar</button>
-                        </a>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    });
+  renderFilteredProducts(filtered);
+});
 </script>
 
     <!-- MODAL PISOS -->
