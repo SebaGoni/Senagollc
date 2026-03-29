@@ -537,25 +537,46 @@ async function loadProductsWithCallback(callback, retry = 0) {
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
     function getCategory(text) {
-      const t = text.toLowerCase();
+  const t = text;
 
-      if (t.includes("spc") || t.includes("click") || t.includes("vinilico"))
-        return "pisos vinilicos";
+  // PISOS VINILICOS
+  if (
+    t.includes("spc") ||
+    t.includes("click") ||
+    t.includes("vinil") ||
+    t.includes("piso")
+  ) return "pisos vinilicos";
 
-      if (t.includes("revestimiento") || t.includes("placa uv") || t.includes("placas uv") || t.includes("decopanel"))
-        return "revestimientos";
+  // REVESTIMIENTOS
+  if (
+    t.includes("revestimiento") ||
+    t.includes("placa uv") ||
+    t.includes("placas uv") ||
+    t.includes("decopanel")
+  ) return "revestimientos";
 
-      if ((t.includes("deck") && t.includes("wpc")) || t.includes("deck wpc"))
-        return "deck";
+  // DECK
+  if (
+    t.includes("deck")
+  ) return "deck";
 
-      if (t.includes("cerco") || t.includes("cesped") || t.includes("jardin") || t.includes("reflector") || t.includes("lampara") || t.includes("siding") || t.includes("viga") || t.includes("wall panel exterior") || t.includes("revestimiento exterior"))
-        return "outdoor";
+  // OUTDOOR
+  if (
+    t.includes("cerco") ||
+    t.includes("cesped") ||
+    t.includes("pasto") ||
+    t.includes("jardin") ||
+    t.includes("grass") ||
+    t.includes("sintetico")
+  ) return "outdoor";
 
-      if (t.includes("zocalo") || t.includes("cable zocalo"))
-        return "zocalos";
+  // ZOCALOS
+  if (
+    t.includes("zocalo")
+  ) return "zocalos";
 
-      return null;
-    }
+  return "otros"; // 🔥 IMPORTANTE (antes era null)
+}
 
     allProducts = data.map(item => {
       const descripcion = item.descripcion || "";
