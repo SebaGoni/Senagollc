@@ -609,26 +609,7 @@ function applyFilters() {
   let filtered = allProducts;
 
   if (currentFilter !== "all") {
-    filtered = allProducts.filter(p => {
-      const t = p.texto;
-
-      if (currentFilter === "pisos vinilicos")
-        return t.includes("spc") || t.includes("click") || t.includes("vinilico");
-
-      if (currentFilter === "revestimientos")
-        return t.includes("revestimiento") || t.includes("placa uv") || t.includes("decopanel");
-
-      if (currentFilter === "deck")
-        return t.includes("deck");
-
-      if (currentFilter === "outdoor")
-        return t.includes("cerco") || t.includes("cesped") || t.includes("jardin");
-
-      if (currentFilter === "zocalos")
-        return t.includes("zocalo");
-
-      return false;
-    });
+    filtered = allProducts.filter(p => p.category === currentFilter);
   }
 
   renderFilteredProducts(filtered);
