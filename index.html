@@ -591,7 +591,7 @@ async function loadProductsWithCallback(callback, retry = 0) {
         name: descripcion,
         precioUSD: parseFloat(item.precio),
         category: getCategory(texto),
-        image: item.imagen || "assets/img/default.jpg",
+        image: item.imagen || "assets/img/pisos-flotantes.jpg",
         texto: texto
       };
     }).filter(p => !isNaN(p.precioUSD));
