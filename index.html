@@ -509,11 +509,19 @@ async function loadProductsWithCallback(callback, retry = 0) {
 
   container.innerHTML = "<p class='text-center'>Cargando productos...</p>";
 
-  const cache = localStorage.getItem("mdq_products_cache");
+const CACHE_KEY = "mdq_products_cache";
+const CACHE_TIME = 1000 * 60 * 10; // 🔥 10 minutos
 
-  if (cache && retry === 0) {
-    try {
-      allProducts = JSON.parse(cache);
+const cacheRaw = localStorage.getItem(CACHE_KEY);
+
+if (cacheRaw && retry === 0) {
+  try {
+    const cache = JSON.parse(cacheRaw);
+
+    // 🔥 validar expiración
+    if (Date.now() - cache.timestamp < CACHE_TIME) {
+
+      allProducts = cache.data;
       shownProducts = 10;
 
       if (callback) {
@@ -522,11 +530,12 @@ async function loadProductsWithCallback(callback, retry = 0) {
         renderProducts();
       }
       return;
-
-    } catch (e) {
-      console.warn("Cache corrupto");
     }
+
+  } catch (e) {
+    console.warn("Cache corrupto");
   }
+}
 
   try {
     const res = await fetch(SHEET_URL + "?t=" + Date.now(), {
@@ -605,7 +614,10 @@ allProducts = data.map(item => {
 
     shownProducts = 10;
 
-    localStorage.setItem("mdq_products_cache", JSON.stringify(allProducts));
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+  data: allProducts,
+  timestamp: Date.now()
+}));
 
     if (callback) {
       callback();
