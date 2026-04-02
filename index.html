@@ -545,8 +545,13 @@ if (cacheRaw && retry === 0) {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
-    function getCategory(text) {
+function getCategory(text) {
   const t = text;
+
+  // 🔥 OUTDOOR PRIMERO
+  if (/cesped|pasto|sintetico|artificial|grass/.test(t)) {
+    return "outdoor";
+  }
 
   // PISOS VINILICOS
   if (
@@ -564,27 +569,12 @@ if (cacheRaw && retry === 0) {
   ) return "revestimientos";
 
   // DECK
-  if (
-    t.includes("deck")
-  ) return "deck";
-
-  // OUTDOOR
-  if (
-    t.includes("cerco") ||
-    t.includes("cesped") ||
-    t.includes("pasto") ||
-    t.includes("jardin") ||
-    t.includes("Jardín") ||
-    t.includes("vertical") ||
-    t.includes("sintetico")
-  ) return "outdoor";
+  if (t.includes("deck")) return "deck";
 
   // ZOCALOS
-  if (
-    t.includes("zocalo")
-  ) return "zocalos";
+  if (t.includes("zocalo")) return "zocalos";
 
-  return "otros"; // 🔥 IMPORTANTE (antes era null)
+  return "otros";
 }
 
 allProducts = data.map(item => {
