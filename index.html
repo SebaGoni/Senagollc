@@ -578,23 +578,30 @@ async function loadProductsWithCallback(callback, retry = 0) {
   return "otros"; // 🔥 IMPORTANTE (antes era null)
 }
 
-    allProducts = data.map(item => {
-      const descripcion = item.descripcion || "";
-      const detalle = item.detalle || "";
+allProducts = data.map(item => {
+  const descripcion = item.descripcion || "";
+  const detalle = item.detalle || "";
 
-      const texto = (descripcion + " " + detalle)
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+  const texto = (descripcion + " " + detalle)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
-      return {
-        name: descripcion,
-        precioUSD: parseFloat(item.precio),
-        category: getCategory(texto),
-        image: item.imagen || "assets/img/pisos-flotantes.jpg",
-        texto: texto
-      };
-    }).filter(p => !isNaN(p.precioUSD));
+  const image = (item.imagen || "").trim();
+
+  return {
+    name: descripcion,
+    precioUSD: parseFloat(item.precio),
+    category: getCategory(texto),
+    image: image,
+    texto: texto
+  };
+})
+.filter(p => 
+  !isNaN(p.precioUSD) &&
+  p.image &&                        // 🔥 tiene imagen
+  p.image.startsWith("http")       // 🔥 es URL válida
+);
 
     shownProducts = 10;
 
