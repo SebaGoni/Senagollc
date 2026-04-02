@@ -488,14 +488,16 @@
     }, appearOptions);
     faders.forEach(fader => appearOnScroll.observe(fader));
 
-    // ===== CATALOGO =====
+// ===== CATALOGO =====
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbzwpyNIlIrJ-gPbHYbb45-MLGxObcpUtJsSYl3PEuHw2mlklM8ivlwu9zArC7IKOHrm/exec";
 const DOLAR = 1450;
 
 let allProducts = [];
 let shownProducts = 10;
-let currentFilter = "pisos vinilicos"; // 🔥 estado actual
+let currentFilter = "pisos vinilicos";
+
+// ================= UTIL =================
 
 function calcularPrecioARS(precioUSD) {
   return Math.round(precioUSD * DOLAR * 1.21 * 1.5 + 1000);
@@ -545,77 +547,74 @@ if (cacheRaw && retry === 0) {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
-function getCategory(text) {
-  const t = text;
+    function getCategory(text) {
+      const t = text;
 
-  // 🔥 OUTDOOR PRIMERO
-  if (/cesped|pasto|sintetico|artificial|Césped|Sintético|grass/.test(t)) {
-    return "outdoor";
-  }
+      // PISOS VINILICOS
+      if (
+        t.includes("spc") ||
+        t.includes("click") ||
+        t.includes("vinilico")
+      ) return "pisos vinilicos";
 
-  // PISOS VINILICOS
-  if (
-    t.includes("spc") ||
-    t.includes("click") ||
-    t.includes("vinilico")
-  ) return "pisos vinilicos";
+      // REVESTIMIENTOS
+      if (
+        t.includes("revestimiento") ||
+        t.includes("placa uv") ||
+        t.includes("placas uv") ||
+        t.includes("decopanel")
+      ) return "revestimientos";
 
-  // REVESTIMIENTOS
-  if (
-    t.includes("revestimiento") ||
-    t.includes("placa uv") ||
-    t.includes("placas uv") ||
-    t.includes("placas") ||  
-    t.includes("Placas UV") ||  
-    t.includes("decopanel")
-  ) return "revestimientos";
+      // DECK
+      if (t.includes("deck")) return "deck";
 
-  // DECK
-  if (t.includes("deck")) return "deck";
+      // OUTDOOR
+      if (
+        t.includes("cerco") ||
+        t.includes("cesped") ||
+        t.includes("pasto") ||
+        t.includes("jardin") ||
+        t.includes("vertical") ||
+        t.includes("sintetico")
+      ) return "outdoor";
 
-  // ZOCALOS
-  if (t.includes("zocalo")) return "zocalos";
+      // ZOCALOS
+      if (t.includes("zocalo")) return "zocalos";
 
-  return "otros";
-}
+      return "otros";
+    }
 
-allProducts = data.map(item => {
-  const descripcion = item.descripcion || "";
-  const detalle = item.detalle || "";
+    allProducts = data.map(item => {
+      const descripcion = item.descripcion || "";
+      const detalle = item.detalle || "";
 
-  const texto = (descripcion + " " + detalle)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+      const texto = (descripcion + " " + detalle)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-  const image = (item.imagen || "").trim();
-
-  return {
-    name: descripcion,
-    precioUSD: parseFloat(item.precio),
-    category: getCategory(texto),
-    image: image,
-    texto: texto
-  };
-})
-.filter(p => 
-  !isNaN(p.precioUSD) &&
-  p.image &&                        // 🔥 tiene imagen
-  p.image.startsWith("http")       // 🔥 es URL válida
-);
+      return {
+        name: descripcion,
+        precioUSD: parseFloat(item.precio),
+        category: getCategory(texto),
+        image: (item.imagen || "").trim(), // 🔥 SIN fallback
+        texto: texto
+      };
+    })
+    .filter(p => 
+      !isNaN(p.precioUSD) &&
+      p.image &&
+      p.image.includes("http") // 🔥 SOLO con imagen real
+    );
 
     shownProducts = 10;
 
     localStorage.setItem(CACHE_KEY, JSON.stringify({
   data: allProducts,
   timestamp: Date.now()
-}));
+    }));
 
-    if (callback) {
-      callback();
-    } else {
-      renderProducts();
-    }
+    callback ? callback() : renderProducts();
 
   } catch (err) {
     console.warn(err);
@@ -633,7 +632,6 @@ allProducts = data.map(item => {
 function filterCategory(cat) {
   currentFilter = cat;
   shownProducts = 10;
-
   applyFilters();
 }
 
@@ -663,7 +661,7 @@ function renderFilteredProducts(products) {
     html += `
       <div class="col-6 col-md-4 col-lg-3">
         <div class="product-card">
-          <img src="${p.image}" loading="lazy">
+          <img src="${p.image}" loading="lazy" onerror="this.parentElement.style.display='none'">
           <div class="product-title">${p.name}</div>
           <div class="product-price">$${precioARS.toLocaleString("es-AR")}</div>
           <a href="${link}" target="_blank">
@@ -695,14 +693,14 @@ function renderProducts() {
 
 function loadMore() {
   shownProducts += 10;
-  applyFilters(); // 🔥 clave: respeta filtro actual
+  applyFilters();
 }
 
 // ================= INIT =================
 
 function loadProductsAndStart() {
   loadProductsWithCallback(() => {
-    filterCategory("pisos vinilicos"); // 🔥 carga inicial
+    filterCategory("pisos vinilicos"); // podés cambiar a "all" si querés ver todo
   });
 }
 
