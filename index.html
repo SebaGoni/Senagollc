@@ -547,42 +547,38 @@ if (cacheRaw && retry === 0) {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error("Formato inválido");
 
-    function getCategory(text) {
-      const t = text;
+    function getCategory(t) {
 
-      // PISOS VINILICOS
-      if (
-        t.includes("spc") ||
-        t.includes("click") ||
-        t.includes("vinilico")
-      ) return "pisos vinilicos";
+  // REVESTIMIENTOS primero (más específico)
+  if (
+    t.includes("revestimiento") ||
+    t.includes("placa uv") ||
+    t.includes("placas uv") ||
+    t.includes("decopanel")
+  ) return "revestimientos";
 
-      // REVESTIMIENTOS
-      if (
-        t.includes("revestimiento") ||
-        t.includes("placa uv") ||
-        t.includes("placas uv") ||
-        t.includes("decopanel")
-      ) return "revestimientos";
+  // DESPUÉS pisos
+  if (
+    t.includes("spc") ||
+    t.includes("click") ||
+    t.includes("vinilico")
+  ) return "pisos vinilicos";
 
-      // DECK
-      if (t.includes("deck")) return "deck";
+  if (t.includes("deck")) return "deck";
 
-      // OUTDOOR
-      if (
-        t.includes("cerco") ||
-        t.includes("cesped") ||
-        t.includes("pasto") ||
-        t.includes("jardin") ||
-        t.includes("vertical") ||
-        t.includes("sintetico")
-      ) return "outdoor";
+  if (
+    t.includes("cerco") ||
+    t.includes("cesped") ||
+    t.includes("pasto") ||
+    t.includes("jardin") ||
+    t.includes("vertical") ||
+    t.includes("sintetico")
+  ) return "outdoor";
 
-      // ZOCALOS
-      if (t.includes("zocalo")) return "zocalos";
+  if (t.includes("zocalo")) return "zocalos";
 
-      return "otros";
-    }
+  return "otros";
+}
 
     allProducts = data.map(item => {
       const descripcion = item.descripcion || "";
@@ -700,7 +696,7 @@ function loadMore() {
 
 function loadProductsAndStart() {
   loadProductsWithCallback(() => {
-    filterCategory("pisos vinilicos"); // podés cambiar a "all" si querés ver todo
+    filterCategory("all"); // podés cambiar a "all" si querés ver todo
   });
 }
 
