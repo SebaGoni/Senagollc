@@ -495,7 +495,7 @@ const DOLAR = 1450;
 
 let allProducts = [];
 let shownProducts = 10;
-let currentFilter = "pisos vinilicos";
+let currentFilter = "all";
 
 // ================= UTIL =================
 
@@ -696,7 +696,7 @@ function loadMore() {
 
 function loadProductsAndStart() {
   loadProductsWithCallback(() => {
-    filterCategory("all"); // podés cambiar a "all" si querés ver todo
+    applyFilters(); // 👈 usa el currentFilter
   });
 }
 
